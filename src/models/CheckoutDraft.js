@@ -181,7 +181,7 @@ const checkoutDraftSchema = new mongoose.Schema(
     productionBlockReason: {
       type: String,
       default:
-        'Blocked pending authoritative tax configuration and real delivery rules (Phase 7B Demo Environment)',
+        'Pending business configuration: Live online payments will be enabled once merchant onboarding and gateway credential verification are completed.',
     },
     priceChangeWarning: {
       type: String,

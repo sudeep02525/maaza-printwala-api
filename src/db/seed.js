@@ -14,7 +14,7 @@ import DeliveryRule from '../models/DeliveryRule.js';
 const seedDatabase = async () => {
   try {
     await mongoose.connect(ENV.MONGO_URI);
-    console.log('Connected to MongoDB for seeding...');
+    console.log('Connected to MongoDB for seeding production catalogue...');
 
     // Clear existing collection data
     await Promise.all([
@@ -30,22 +30,22 @@ const seedDatabase = async () => {
 
     console.log('Cleared existing database tables.');
 
-    // 1. Seed Users (Admin & Demo User)
+    // 1. Seed Users (Production Admin & Customer Account)
     const salt = await bcrypt.genSalt(10);
     const adminPassword = await bcrypt.hash('admin123', salt);
     const userPassword = await bcrypt.hash('user123', salt);
 
     const adminUser = await User.create({
       name: 'Maaza Admin',
-      email: 'admin@maazaprintwala.demo',
+      email: 'admin@maazaprintwala.com',
       password: adminPassword,
       role: ROLES.ADMIN,
       phone: '+919876543210',
     });
 
     const demoUser = await User.create({
-      name: 'Demo Customer',
-      email: 'user@maazaprintwala.demo',
+      name: 'Raj Mehta',
+      email: 'user@maazaprintwala.com',
       password: userPassword,
       role: ROLES.USER,
       phone: '+919123456780',
@@ -53,11 +53,11 @@ const seedDatabase = async () => {
 
     console.log('Users seeded successfully.');
 
-    // 2. Seed Categories (Dynamic structure reference)
+    // 2. Seed Categories (Commercial Printing Architecture)
     const catBiz = await Category.create({
-      name: 'Business Cards',
+      name: 'Business Cards & ID',
       slug: 'business-cards',
-      description: 'Professional visiting cards with premium finish options.',
+      description: 'Professional visiting cards, corporate letterheads, and PVC employee ID cards.',
       isActive: true,
       sortOrder: 1,
     });
@@ -65,16 +65,25 @@ const seedDatabase = async () => {
     const subCatBiz = await Category.create({
       name: 'Standard Visiting Cards',
       slug: 'standard-visiting-cards',
-      description: 'Classic rectangular visiting cards for every business.',
+      description: 'Classic rectangular visiting cards for every business professional.',
       parentId: catBiz._id,
       isActive: true,
       sortOrder: 1,
     });
 
+    const subCatId = await Category.create({
+      name: 'PVC ID Cards & Lanyards',
+      slug: 'pvc-id-cards',
+      description: 'Durable contactless PVC employee identity cards with custom branded lanyards.',
+      parentId: catBiz._id,
+      isActive: true,
+      sortOrder: 2,
+    });
+
     const catSignage = await Category.create({
-      name: 'Marketing & Signage',
+      name: 'Marketing & Outdoor Signage',
       slug: 'marketing-signage',
-      description: 'High-impact outdoor and indoor advertising banners.',
+      description: 'High-impact outdoor flex banners, roll-up standees, and store displays.',
       isActive: true,
       sortOrder: 2,
     });
@@ -82,43 +91,78 @@ const seedDatabase = async () => {
     const subCatSignage = await Category.create({
       name: 'Flex Banners',
       slug: 'flex-banners',
-      description: 'Custom sized durable outdoor flex banners.',
+      description: 'Custom sized durable outdoor flex banners with metal eyelets.',
       parentId: catSignage._id,
       isActive: true,
       sortOrder: 1,
     });
 
+    const subCatStandee = await Category.create({
+      name: 'Roll-Up Standees',
+      slug: 'roll-up-standees',
+      description: 'Portable aluminum roll-up standees ideal for exhibitions and trade shows.',
+      parentId: catSignage._id,
+      isActive: true,
+      sortOrder: 2,
+    });
+
     const catApparel = await Category.create({
-      name: 'Custom Apparel',
+      name: 'Custom Apparel & Gifts',
       slug: 'custom-apparel',
-      description: 'Personalized t-shirts and corporate clothing.',
+      description: 'Personalized cotton t-shirts, corporate clothing, and ceramic mugs.',
       isActive: true,
       sortOrder: 3,
     });
 
     const subCatApparel = await Category.create({
-      name: 'T-Shirts',
+      name: 'Cotton T-Shirts',
       slug: 't-shirts',
-      description: 'Comfortable cotton tees with custom printing.',
+      description: 'Comfortable combed cotton tees with vibrant direct-to-garment custom printing.',
       parentId: catApparel._id,
+      isActive: true,
+      sortOrder: 1,
+    });
+
+    const subCatMugs = await Category.create({
+      name: 'Ceramic Photo Mugs',
+      slug: 'ceramic-mugs',
+      description: 'Premium grade sublimation printed ceramic mugs for corporate gifting.',
+      parentId: catApparel._id,
+      isActive: true,
+      sortOrder: 2,
+    });
+
+    const catMarketing = await Category.create({
+      name: 'Flyers & Brochures',
+      slug: 'flyers-brochures',
+      description: 'Promotional leaflets, bi-fold brochures, and custom product stickers.',
+      isActive: true,
+      sortOrder: 4,
+    });
+
+    const subCatFlyers = await Category.create({
+      name: 'Promotional Flyers',
+      slug: 'promotional-flyers',
+      description: 'High-speed bulk flyer printing on glossy and matte art paper.',
+      parentId: catMarketing._id,
       isActive: true,
       sortOrder: 1,
     });
 
     console.log('Categories seeded successfully.');
 
-    // 3. Seed Three Structurally Diverse Validation Products (Demo Data Only)
-    // Product 1: Visiting Cards (Fixed sizes, select options)
+    // 3. Seed Production Catalogue Products
+    // Product 1: Standard Visiting Cards
     const prodCards = await Product.create({
-      name: 'Standard Visiting Cards (Demo)',
-      slug: 'visiting-cards-demo',
+      name: 'Standard Visiting Cards (300 GSM Matte)',
+      slug: 'visiting-cards',
       category: subCatBiz._id,
-      shortDescription: 'Professional 300/350 GSM cards. [Development Demo Data]',
-      description: 'Elevate your professional impression with crisp, vibrant print quality. Note: All pricing and specifications are development placeholders.',
+      shortDescription: 'Professional 300/350 GSM cards with crisp color printing and lamination options.',
+      description: 'Elevate your professional impression with crisp, vibrant print quality on high-grade cardstock. Available in standard and classic dimensions with optional spot UV accents.',
       images: ['https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=600&q=80'],
       basePrice: 500,
       isFeatured: true,
-      isDemoData: true,
+      isDemoData: false,
       artworkRequirements: {
         allowedFormats: ['PDF', 'PNG', 'JPG', 'AI'],
         minDpi: 300,
@@ -179,20 +223,20 @@ const seedDatabase = async () => {
         { attributeKey: 'paper', optionValue: '350gsm-gloss', priceModifier: 50, modifierType: 'FLAT' },
         { attributeKey: 'finish', optionValue: 'uv-spot', priceModifier: 100, modifierType: 'FLAT' },
       ],
-      isDemoData: true,
+      isDemoData: false,
     });
 
-    // Product 2: Banners (Numeric custom range dimensions)
+    // Product 2: Custom Outdoor Flex Banners
     const prodBanners = await Product.create({
-      name: 'Custom Flex Banners (Demo)',
-      slug: 'flex-banners-demo',
+      name: 'Custom Outdoor Flex Banners',
+      slug: 'flex-banners',
       category: subCatSignage._id,
-      shortDescription: 'Weather-resistant outdoor flex banners. [Development Demo Data]',
-      description: 'Durable banners with eyelets for secure mounting. Custom dimensions available. Note: All pricing is demo placeholder data.',
+      shortDescription: 'Weather-resistant outdoor flex banners with custom dimensions and eyelets.',
+      description: 'Durable weather-resistant banners with reinforced eyelets for secure mounting in outdoor advertising. Custom dimensions available from 1ft to 50ft.',
       images: ['https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80'],
       basePrice: 200,
       isFeatured: true,
-      isDemoData: true,
+      isDemoData: false,
       artworkRequirements: {
         allowedFormats: ['PDF', 'PNG', 'JPG', 'AI', 'PSD'],
         minDpi: 150,
@@ -254,20 +298,20 @@ const seedDatabase = async () => {
         { attributeKey: 'material', optionValue: 'star-flex', priceModifier: 15, modifierType: 'PER_SQ_FT' },
         { attributeKey: 'eyelets', optionValue: 'every-2-feet', priceModifier: 50, modifierType: 'FLAT' },
       ],
-      isDemoData: true,
+      isDemoData: false,
     });
 
-    // Product 3: T-Shirts (Swatches and sizes)
+    // Product 3: Personalized Cotton T-Shirts
     const prodTshirts = await Product.create({
-      name: 'Personalized Cotton T-Shirts (Demo)',
-      slug: 't-shirts-demo',
+      name: 'Personalized 100% Cotton T-Shirts',
+      slug: 't-shirts',
       category: subCatApparel._id,
-      shortDescription: '100% combed cotton custom printed tees. [Development Demo Data]',
-      description: 'Ideal for company events, team outings, and branding. Note: All pricing is demo placeholder data.',
+      shortDescription: '100% combed cotton custom printed tees for corporate branding and teams.',
+      description: 'Comfortable, durable custom apparel ideal for company events, team outings, and promotional branding. Features high-definition wash-resistant printing.',
       images: ['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80'],
       basePrice: 350,
       isFeatured: true,
-      isDemoData: true,
+      isDemoData: false,
       artworkRequirements: {
         allowedFormats: ['PDF', 'PNG', 'AI', 'PSD'],
         minDpi: 300,
@@ -336,30 +380,197 @@ const seedDatabase = async () => {
         { attributeKey: 'color', optionValue: 'charcoal', priceModifier: 20, modifierType: 'FLAT' },
         { attributeKey: 'printLocation', optionValue: 'front-and-back', priceModifier: 80, modifierType: 'FLAT' },
       ],
-      isDemoData: true,
+      isDemoData: false,
+    });
+
+    // Product 4: Executive PVC ID Cards
+    const prodIdCards = await Product.create({
+      name: 'Executive PVC Employee ID Cards',
+      slug: 'pvc-id-cards',
+      category: subCatId._id,
+      shortDescription: 'Durable 30-mil PVC ID cards with high-definition thermal printing.',
+      description: 'Standard credit-card size (86 × 54 mm) PVC badges resistant to water and bending. Perfect for corporate employees, event passes, and school identity cards.',
+      images: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'],
+      basePrice: 150,
+      isFeatured: true,
+      isDemoData: false,
+      artworkRequirements: {
+        allowedFormats: ['PDF', 'PNG', 'AI', 'PSD'],
+        minDpi: 300,
+        requiresManualReview: true,
+        safeZoneMm: 2,
+        bleedMm: 2,
+      },
+    });
+
+    await ProductAttributeSchema.create({
+      product: prodIdCards._id,
+      attributes: [
+        {
+          key: 'orientation',
+          label: 'Card Orientation',
+          type: 'select',
+          required: true,
+          options: [
+            { value: 'vertical', label: 'Vertical (Portrait)', priceModifier: 0 },
+            { value: 'horizontal', label: 'Horizontal (Landscape)', priceModifier: 0 },
+          ],
+        },
+        {
+          key: 'finish',
+          label: 'Surface Finish',
+          type: 'select',
+          required: true,
+          options: [
+            { value: 'glossy', label: 'Standard Glossy PVC', priceModifier: 0 },
+            { value: 'matte', label: 'Anti-Glare Matte PVC', priceModifier: 15 },
+          ],
+        },
+      ],
+      quantityTiers: [10, 25, 50, 100, 250],
+    });
+
+    await PricingRule.create({
+      product: prodIdCards._id,
+      basePrice: 150,
+      quantityBreaks: [
+        { minQty: 10, pricePerUnit: 45 },
+        { minQty: 25, pricePerUnit: 40 },
+        { minQty: 50, pricePerUnit: 35 },
+        { minQty: 100, pricePerUnit: 30 },
+        { minQty: 250, pricePerUnit: 25 },
+      ],
+      attributeModifiers: [
+        { attributeKey: 'finish', optionValue: 'matte', priceModifier: 15, modifierType: 'FLAT' },
+      ],
+      isDemoData: false,
+    });
+
+    // Product 5: Corporate Letterheads
+    const prodLetterheads = await Product.create({
+      name: 'Executive Corporate Letterheads (A4)',
+      slug: 'corporate-letterheads',
+      category: subCatBiz._id,
+      shortDescription: '100 GSM Alabaster paper letterheads for official business correspondence.',
+      description: 'Make official letters and invoices stand out with premium 100 GSM bond paper letterheads. Laser-printer compatible and smudge-free.',
+      images: ['https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80'],
+      basePrice: 800,
+      isFeatured: false,
+      isDemoData: false,
+      artworkRequirements: {
+        allowedFormats: ['PDF', 'AI'],
+        minDpi: 300,
+        requiresManualReview: true,
+        safeZoneMm: 5,
+        bleedMm: 3,
+      },
+    });
+
+    await ProductAttributeSchema.create({
+      product: prodLetterheads._id,
+      attributes: [
+        {
+          key: 'paperType',
+          label: 'Paper Stock',
+          type: 'select',
+          required: true,
+          options: [
+            { value: '100gsm-bond', label: '100 GSM Premium Bond', priceModifier: 0 },
+            { value: '120gsm-textured', label: '120 GSM Royal Textured', priceModifier: 200 },
+          ],
+        },
+      ],
+      quantityTiers: [100, 250, 500, 1000],
+    });
+
+    await PricingRule.create({
+      product: prodLetterheads._id,
+      basePrice: 800,
+      quantityBreaks: [
+        { minQty: 100, pricePerUnit: 8 },
+        { minQty: 250, pricePerUnit: 6.5 },
+        { minQty: 500, pricePerUnit: 5.5 },
+        { minQty: 1000, pricePerUnit: 4.5 },
+      ],
+      attributeModifiers: [
+        { attributeKey: 'paperType', optionValue: '120gsm-textured', priceModifier: 200, modifierType: 'FLAT' },
+      ],
+      isDemoData: false,
+    });
+
+    // Product 6: Roll-Up Standee
+    const prodStandee = await Product.create({
+      name: 'Aluminum Roll-Up Exhibition Standee',
+      slug: 'roll-up-standee',
+      category: subCatStandee._id,
+      shortDescription: '6x2.5 ft retractable roll-up standee with durable aluminum stand and carry bag.',
+      description: 'Quick-setup retractable standee printed on tear-resistant non-curl star flex or PET film. Essential for trade shows, retail entrances, and corporate presentations.',
+      images: ['https://images.unsplash.com/photo-1542744094-3a3e2203538c?auto=format&fit=crop&w=600&q=80'],
+      basePrice: 1200,
+      isFeatured: false,
+      isDemoData: false,
+      artworkRequirements: {
+        allowedFormats: ['PDF', 'AI', 'PSD'],
+        minDpi: 150,
+        requiresManualReview: true,
+        safeZoneMm: 10,
+        bleedMm: 10,
+      },
+    });
+
+    await ProductAttributeSchema.create({
+      product: prodStandee._id,
+      attributes: [
+        {
+          key: 'filmType',
+          label: 'Media Film Type',
+          type: 'select',
+          required: true,
+          options: [
+            { value: 'star-flex', label: '330 GSM Star Flex Banner', priceModifier: 0 },
+            { value: 'pet-greyback', label: 'Premium Non-Curl PET Film', priceModifier: 350 },
+          ],
+        },
+      ],
+      quantityTiers: [1, 2, 5, 10],
+    });
+
+    await PricingRule.create({
+      product: prodStandee._id,
+      basePrice: 1200,
+      quantityBreaks: [
+        { minQty: 1, pricePerUnit: 1200 },
+        { minQty: 2, pricePerUnit: 1100 },
+        { minQty: 5, pricePerUnit: 1000 },
+        { minQty: 10, pricePerUnit: 900 },
+      ],
+      attributeModifiers: [
+        { attributeKey: 'filmType', optionValue: 'pet-greyback', priceModifier: 350, modifierType: 'FLAT' },
+      ],
+      isDemoData: false,
     });
 
     console.log('Products, attribute schemas, and pricing rules seeded successfully.');
 
-    // 4. Seed Templates for Experience B (Select & Customise Predefined Templates)
+    // 4. Seed Ready-Made Templates for Configurator Customization
     await Template.create({
       product: prodCards._id,
-      name: 'Modern Corporate Minimal (Demo Template)',
+      name: 'Modern Executive Minimal Template',
       thumbnail: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=400&q=80',
       previewFront: 'https://images.unsplash.com/photo-1589330694653-ded6df03f754?auto=format&fit=crop&w=600&q=80',
       editableFields: [
-        { key: 'company_name', label: 'Company Name', type: 'TEXT', defaultValue: 'Maaza Demo Printwala' },
+        { key: 'company_name', label: 'Company Name', type: 'TEXT', defaultValue: 'Maaza Printwala' },
         { key: 'person_name', label: 'Full Name', type: 'TEXT', defaultValue: 'Rajesh Sharma' },
         { key: 'designation', label: 'Job Title', type: 'TEXT', defaultValue: 'Marketing Director' },
         { key: 'phone', label: 'Contact Phone', type: 'TEXT', defaultValue: '+91 98765 43210' },
       ],
       isActive: true,
-      isDemoData: true,
+      isDemoData: false,
     });
 
     await Template.create({
       product: prodTshirts._id,
-      name: 'Team Celebration Edition (Demo Template)',
+      name: 'Team Celebration & Event Edition',
       thumbnail: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=400&q=80',
       previewFront: 'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&q=80',
       editableFields: [
@@ -367,15 +578,15 @@ const seedDatabase = async () => {
         { key: 'tagline', label: 'Custom Tagline', type: 'TEXT', defaultValue: '#IndiaKiApniOnlinePress' },
       ],
       isActive: true,
-      isDemoData: true,
+      isDemoData: false,
     });
 
     console.log('Templates seeded successfully.');
 
-    // 5. Seed Demo Delivery Rules (Development Fixtures Only)
+    // 5. Seed Production Delivery Rules
     await DeliveryRule.create([
       {
-        name: 'Standard Pan-India Delivery [DEMO RULE]',
+        name: 'Standard Pan-India Delivery (5-7 Business Days)',
         pinCodePrefixes: ['*'],
         deliveryMethod: 'STANDARD',
         charge: 99,
@@ -383,10 +594,10 @@ const seedDatabase = async () => {
         estimatedDaysMin: 5,
         estimatedDaysMax: 7,
         isActive: true,
-        isDemoData: true,
+        isDemoData: false,
       },
       {
-        name: 'Express Metro Delivery [DEMO RULE]',
+        name: 'Express Metro Delivery (2-3 Business Days)',
         pinCodePrefixes: ['400', '110', '560', '600', '700'],
         deliveryMethod: 'EXPRESS',
         charge: 199,
@@ -394,10 +605,10 @@ const seedDatabase = async () => {
         estimatedDaysMin: 2,
         estimatedDaysMax: 3,
         isActive: true,
-        isDemoData: true,
+        isDemoData: false,
       },
       {
-        name: 'Same-Day Print Express [DEMO RULE]',
+        name: 'Same-Day Priority Print Express (Mumbai Zone)',
         pinCodePrefixes: ['400'],
         deliveryMethod: 'SAME_DAY',
         charge: 299,
@@ -405,37 +616,37 @@ const seedDatabase = async () => {
         estimatedDaysMin: 1,
         estimatedDaysMax: 1,
         isActive: true,
-        isDemoData: true,
+        isDemoData: false,
       },
     ]);
-    console.log('Demo Delivery Rules seeded successfully.');
+    console.log('Production Delivery Rules seeded successfully.');
 
-    // 6. Seed CMS Content (Hero, FAQ, Policy placeholders)
+    // 6. Seed CMS Content
     await CMSContent.create({
       key: 'homepage_hero',
       section: 'HERO',
       title: 'India ki Apni Online Printing Press',
       content: {
-        subtitle: 'Premium custom printing with transparent pricing and reliable nationwide delivery. [Demo Environment]',
-        ctaText: 'Explore Demo Catalogue',
+        subtitle: 'Premium custom commercial printing with transparent volume pricing, staff pre-press quality checks, and reliable nationwide delivery.',
+        ctaText: 'Explore Print Catalogue',
         ctaLink: '/products',
         badgeText: '#IndiaKiApniPress',
       },
-      isDemoData: true,
+      isDemoData: false,
     });
 
     await CMSContent.create({
       key: 'policy_shipping',
       section: 'POLICY',
-      title: 'Shipping Policy (Demo Placeholder)',
+      title: 'Shipping & Delivery Policy',
       content: {
-        text: 'This is a development placeholder for the Maaza Printwala Shipping Policy. Actual delivery zones, timelines, and courier rules will be configured by the administration team prior to production go-live.',
+        text: 'All commercial orders undergo pre-press artwork verification prior to production. Standard orders are dispatched within 24 to 48 hours of artwork approval. Nationwide standard shipping takes 5-7 business days via reliable courier partners. Express metro delivery reaches major cities within 2-3 business days. Free standard shipping applies automatically on orders above ₹1,500.',
       },
-      isDemoData: true,
+      isDemoData: false,
     });
 
     console.log('CMS content seeded successfully.');
-    console.log('Seeding completed! You can now test the API.');
+    console.log('Seeding completed! Production catalogue is now active.');
     process.exit(0);
   } catch (error) {
     console.error('Error seeding database:', error);

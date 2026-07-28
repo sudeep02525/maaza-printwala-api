@@ -133,7 +133,7 @@ const revalidateCartAndDraft = async (cart, draft) => {
 
   // Enforce safety guards
   draft.isProductionPaymentReady = false;
-  draft.productionBlockReason = 'Blocked pending authoritative tax configuration and real delivery rules (Phase 7B Demo Environment)';
+  draft.productionBlockReason = 'Pending business configuration: Live online payments will be enabled once merchant onboarding and gateway credential verification are completed.';
 
   await draft.save();
   return { success: true, draft, priceChanged };
@@ -466,7 +466,7 @@ export const reviewAndPreparePayment = async (req, res, next) => {
     // Transition to READY_FOR_PAYMENT
     draft.status = 'READY_FOR_PAYMENT';
     draft.isProductionPaymentReady = false; // MUST REMAIN FALSE
-    draft.productionBlockReason = 'Blocked pending authoritative tax configuration and real delivery rules (Phase 7B Demo Environment)';
+    draft.productionBlockReason = 'Pending business configuration: Live online payments will be enabled once merchant onboarding and gateway credential verification are completed.';
     await draft.save();
 
     return sendSuccess(res, STATUS_CODES.OK, 'Checkout validated and ready for payment phase', { draft });

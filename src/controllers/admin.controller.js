@@ -15,7 +15,7 @@ export const getDashboardStats = async (req, res, next) => {
       Order.find().sort({ createdAt: -1 }).limit(5).populate('user', 'name email'),
     ]);
 
-    // Calculate demo revenue
+    // Calculate total order revenue
     const orders = await Order.find({ paymentStatus: { $in: ['PAID', 'PENDING'] } });
     const totalRevenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
 

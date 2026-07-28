@@ -51,9 +51,9 @@ async function runTestSuite() {
     await mongoose.connect(ENV.MONGO_URI);
 
     // 0. Setup: Ensure we have a product in DB and create a cart with 1 item
-    const product = await Product.findOne({ slug: 'visiting-cards-demo' });
+    const product = await Product.findOne({ slug: 'visiting-cards' });
     if (!product) {
-      throw new Error('Demo product visiting-cards-demo not found in DB. Run seed first.');
+      throw new Error('Product visiting-cards not found in DB. Run seed first.');
     }
 
     // Fetch a valid template for Visiting Cards

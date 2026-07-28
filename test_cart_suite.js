@@ -45,9 +45,9 @@ const runSuite = async () => {
   // 0. Fetch Products
   const prodRes = await makeRequest('GET', '/products');
   const products = prodRes.data.data.products;
-  const vcProd = products.find((p) => p.slug === 'visiting-cards-demo');
-  const fbProd = products.find((p) => p.slug === 'flex-banners-demo');
-  const tsProd = products.find((p) => p.slug === 't-shirts-demo');
+  const vcProd = products.find((p) => p.slug === 'visiting-cards');
+  const fbProd = products.find((p) => p.slug === 'flex-banners');
+  const tsProd = products.find((p) => p.slug === 't-shirts');
 
   console.log('0. Seed Products Loaded:');
   console.log(`   - Visiting Cards ID: ${vcProd._id}`);
