@@ -32,3 +32,13 @@ export const getTemplateById = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllTemplates = async (req, res, next) => {
+  try {
+    const templates = await Template.find({ isActive: true }).populate('product', 'name slug').limit(20);
+    return sendSuccess(res, STATUS_CODES.OK, 'All templates fetched successfully', { templates });
+  } catch (error) {
+    next(error);
+  }
+};
+

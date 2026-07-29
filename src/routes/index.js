@@ -10,6 +10,7 @@ import uploadRoutes from './upload.routes.js';
 import cartRoutes from './cart.routes.js';
 import checkoutRoutes from './checkout.routes.js';
 import paymentRoutes from './payment.routes.js';
+import cmsRoutes from './cms.routes.js';
 
 const router = express.Router();
 
@@ -24,6 +25,8 @@ router.use('/upload', uploadRoutes);
 router.use('/cart', cartRoutes);
 router.use('/checkout', checkoutRoutes);
 router.use('/payments', paymentRoutes);
+router.use('/cms', cmsRoutes);
+
 
 router.get('/health', (req, res) => {
   res.status(200).json({
