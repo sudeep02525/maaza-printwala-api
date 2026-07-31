@@ -2,7 +2,7 @@ import User from '../models/User.js';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES, ERROR_MESSAGES } from '../constants/error.constants.js';
-import { ENV } from '../config/env.js';
+
 
 export const register = async (req, res, next) => {
   try {
@@ -26,13 +26,13 @@ export const register = async (req, res, next) => {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -66,13 +66,13 @@ export const login = async (req, res, next) => {
 
     res.cookie('accessToken', accessToken, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 15 * 60 * 1000,
     });
 
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
-      secure: ENV.NODE_ENV === 'production',
+      secure: process.env.NODE_ENV === 'production',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 

@@ -1,8 +1,9 @@
+import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
-import { ENV } from './src/config/env.js';
+
 import { connectDB } from './src/config/db.js';
 import routes from './src/routes/index.js';
 import { errorHandler } from './src/middleware/error.middleware.js';
@@ -17,7 +18,7 @@ app.use('/uploads', express.static(path.resolve('public/uploads')));
 
 app.use(
   cors({
-    origin: [ENV.CLIENT_URL_WEB, ENV.CLIENT_URL_ADMIN, 'http://localhost:3000', 'http://localhost:3001'],
+    origin: [process.env.CLIENT_URL_WEB || 'http://localhost:3000', process.env.CLIENT_URL_ADMIN || 'http://localhost:3001', 'http://localhost:3000', 'http://localhost:3001'],
     credentials: true,
   })
 );
@@ -40,10 +41,10 @@ app.get('/', (req, res) => {
 // Centralized Error Handling Middleware
 app.use(errorHandler);
 
-const PORT = ENV.PORT || 5000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
-  console.log(`Server running in ${ENV.NODE_ENV} mode on port ${PORT}`);
+  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);
 });
 
 export default app;

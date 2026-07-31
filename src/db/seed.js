@@ -1,6 +1,7 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
-import { ENV } from '../config/env.js';
+
 import { ROLES } from '../constants/roles.constants.js';
 import User from '../models/User.js';
 import Category from '../models/Category.js';
@@ -13,7 +14,7 @@ import DeliveryRule from '../models/DeliveryRule.js';
 
 const seedDatabase = async () => {
   try {
-    await mongoose.connect(ENV.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/maaza_printwala');
     console.log('Connected to MongoDB for seeding production catalogue...');
 
     // Clear existing collection data

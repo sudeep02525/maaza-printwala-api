@@ -1,5 +1,6 @@
+import 'dotenv/config';
 import mongoose from 'mongoose';
-import { ENV } from './src/config/env.js';
+
 import Product from './src/models/Product.js';
 import PricingRule from './src/models/PricingRule.js';
 import Cart from './src/models/Cart.js';
@@ -48,7 +49,7 @@ async function runTestSuite() {
   console.log('==================================================\n');
 
   try {
-    await mongoose.connect(ENV.MONGO_URI);
+    await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/maaza_printwala');
 
     // 0. Setup: Ensure we have a product in DB and create a cart with 1 item
     const product = await Product.findOne({ slug: 'visiting-cards' });

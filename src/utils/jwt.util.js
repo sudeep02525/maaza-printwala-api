@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { ENV } from '../config/env.js';
+
 
 export const generateAccessToken = (user) => {
   return jwt.sign(
@@ -7,8 +7,8 @@ export const generateAccessToken = (user) => {
       id: user._id,
       role: user.role,
     },
-    ENV.ACCESS_TOKEN_SECRET,
-    { expiresIn: ENV.ACCESS_TOKEN_EXPIRES }
+    process.env.ACCESS_TOKEN_SECRET || 'dev_access_secret_key_change_in_prod',
+    { expiresIn: process.env.ACCESS_TOKEN_EXPIRES || '15m' }
   );
 };
 
@@ -17,14 +17,14 @@ export const generateRefreshToken = (user) => {
     {
       id: user._id,
     },
-    ENV.REFRESH_TOKEN_SECRET,
-    { expiresIn: ENV.REFRESH_TOKEN_EXPIRES }
+    process.env.REFRESH_TOKEN_SECRET || 'dev_refresh_secret_key_change_in_prod',
+    { expiresIn: process.env.REFRESH_TOKEN_EXPIRES || '7d' }
   );
 };
 
 export const verifyAccessToken = (token) => {
   try {
-    return jwt.verify(token, ENV.ACCESS_TOKEN_SECRET);
+    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'dev_access_secret_key_change_in_prod');
   } catch (error) {
     return null;
   }
@@ -32,7 +32,7 @@ export const verifyAccessToken = (token) => {
 
 export const verifyRefreshToken = (token) => {
   try {
-    return jwt.verify(token, ENV.REFRESH_TOKEN_SECRET);
+    return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || 'dev_refresh_secret_key_change_in_prod');
   } catch (error) {
     return null;
   }
