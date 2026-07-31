@@ -38,6 +38,11 @@ app.get('/', (req, res) => {
   });
 });
 
+// Health check route
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'ok', uptime: process.uptime() });
+});
+
 // Centralized Error Handling Middleware
 app.use(errorHandler);
 
