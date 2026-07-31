@@ -18,7 +18,13 @@ app.use('/uploads', express.static(path.resolve('public/uploads')));
 
 app.use(
   cors({
-    origin: [process.env.CLIENT_URL_WEB || 'http://localhost:3000', process.env.CLIENT_URL_ADMIN || 'http://localhost:3001', 'http://localhost:3000', 'http://localhost:3001'],
+    origin: [
+      process.env.CLIENT_URL_WEB || 'http://localhost:3000',
+      process.env.CLIENT_URL_ADMIN || 'http://localhost:3001',
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://maaza-printwala-web.vercel.app'
+    ],
     credentials: true,
   })
 );
