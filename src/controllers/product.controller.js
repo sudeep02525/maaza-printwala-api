@@ -69,7 +69,7 @@ export const getProductSchema = async (req, res, next) => {
 
     const schema = await ProductAttributeSchema.findOne({ product: productId });
     if (!schema) {
-      return sendError(res, STATUS_CODES.NOT_FOUND, 'Attribute schema not found for this product');
+      return sendSuccess(res, STATUS_CODES.OK, 'No attribute schema for this product', { schema: null });
     }
 
     return sendSuccess(res, STATUS_CODES.OK, 'Product schema fetched successfully', { schema });

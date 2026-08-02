@@ -17,11 +17,16 @@ const seedDatabase = async () => {
 
     // Create Categories
     const categories = await Category.insertMany([
-      { name: 'Business Cards', slug: 'business-cards', isActive: true },
-      { name: 'T-Shirts', slug: 't-shirts', isActive: true },
-      { name: 'Mugs & Drinkware', slug: 'mugs', isActive: true },
-      { name: 'Corporate Gifts', slug: 'corporate-gifts', isActive: true },
-      { name: 'Packaging', slug: 'packaging', isActive: true },
+      { name: 'Paper Printing Products', slug: 'paper-printing-products', isActive: true },
+      { name: 'Pens', slug: 'pens', isActive: true },
+      { name: 'Clothing', slug: 'clothing', isActive: true },
+      { name: 'Caps', slug: 'caps', isActive: true },
+      { name: 'Office Products', slug: 'office-products', isActive: true },
+      { name: 'canvas', slug: 'canvas', isActive: true },
+      { name: 'Sublimation Gifting Products', slug: 'sublimation-gifting-products', isActive: true },
+      { name: 'Personalise Products', slug: 'personalise-products', isActive: true },
+      { name: 'Wooden Products', slug: 'wooden-products', isActive: true },
+      { name: 'Promotional Items', slug: 'promotional-items', isActive: true },
     ]);
 
     console.log('Categories seeded!');
@@ -31,52 +36,82 @@ const seedDatabase = async () => {
       {
         name: 'Premium Standard Business Cards',
         slug: 'premium-standard-business-cards',
-        category: categories[0]._id,
+        category: categories[0]._id, // Paper Printing
         description: 'High quality standard business cards for your company.',
         basePrice: 199,
         isActive: true,
         isFeatured: true,
-        images: ['https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=400&q=80']
+        images: ['/images/business_cards.png']
       },
       {
         name: 'Custom Printed Cotton T-Shirt',
         slug: 'custom-cotton-tshirt',
-        category: categories[1]._id,
+        category: categories[2]._id, // Clothing
         description: '100% Cotton custom printed t-shirts.',
         basePrice: 399,
         isActive: true,
         isFeatured: true,
-        images: ['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=400&q=80']
+        images: ['/images/cotton_tshirt.png']
       },
       {
         name: 'Personalized Coffee Mug',
         slug: 'personalized-coffee-mug',
-        category: categories[2]._id,
+        category: categories[6]._id, // Sublimation
         description: 'Ceramic personalized coffee mug.',
         basePrice: 249,
         isActive: true,
         isFeatured: true,
-        images: ['https://images.unsplash.com/photo-1514228742587-6b1558fcca3d?auto=format&fit=crop&w=400&q=80']
+        images: ['/images/coffee_mug.png']
       },
       {
         name: 'Corporate Welcome Kit',
         slug: 'corporate-welcome-kit',
-        category: categories[3]._id,
+        category: categories[9]._id, // Promotional
         description: 'Welcome kit with diary, pen, and bottle.',
         basePrice: 1499,
         isActive: true,
         isFeatured: true,
-        images: ['https://images.unsplash.com/photo-1542744094-3a3e2203538c?auto=format&fit=crop&w=400&q=80']
+        images: ['/images/corporate_welcome_kit.png']
       },
       {
         name: 'Custom Corrugated Boxes',
         slug: 'custom-corrugated-boxes',
-        category: categories[4]._id,
+        category: categories[0]._id, // Paper
         description: 'Sturdy packaging boxes for e-commerce.',
         basePrice: 49,
         isActive: true,
         isFeatured: true,
-        images: ['https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=400&q=80']
+        images: ['/images/corrugated_boxes.png']
+      },
+      {
+        name: 'Embroidered Polo Shirt',
+        slug: 'embroidered-polo-shirt',
+        category: categories[2]._id, // Clothing
+        description: 'Premium polo shirts with custom embroidery.',
+        basePrice: 599,
+        isActive: true,
+        isFeatured: true,
+        images: ['/images/polo_shirt.png']
+      },
+      {
+        name: 'Executive Letterhead',
+        slug: 'executive-letterhead',
+        category: categories[0]._id, // Paper
+        description: 'Professional letterheads for executive communication.',
+        basePrice: 99,
+        isActive: true,
+        isFeatured: true,
+        images: ['/images/executive_letterhead.png']
+      },
+      {
+        name: 'Outdoor Vinyl Banner',
+        slug: 'outdoor-vinyl-banner',
+        category: categories[0]._id, // Paper
+        description: 'Durable vinyl banners for outdoor advertising.',
+        basePrice: 899,
+        isActive: true,
+        isFeatured: true,
+        images: ['/images/outdoor_banner.png']
       }
     ];
 
