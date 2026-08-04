@@ -6,6 +6,7 @@ import { STATUS_CODES } from '../constants/error.constants.js';
 export const getTemplatesByProduct = async (req, res, next) => {
   try {
     const { productId } = req.params;
+    console.log('Fetching templates for product:', productId);
     let targetId = productId;
     if (!productId.match(/^[0-9a-fA-F]{24}$/)) {
       const p = await Product.findOne({ slug: productId });

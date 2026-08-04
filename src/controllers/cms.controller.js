@@ -15,7 +15,7 @@ export const getHomepageContent = async (req, res, next) => {
       { id: 'trending', enabled: true, order: 5, title: 'Trending Print Catalogue', subtitle: 'Server-authoritative volume rates for commercial accounts' },
       { id: 'business-solutions', enabled: true, order: 6, title: 'Enterprise Business Solutions', subtitle: 'Dedicated corporate support, API invoicing, and custom substrates' },
       { id: 'showcase', enabled: true, order: 7, title: 'Commercial Output Gallery', subtitle: 'Real print results and lamination specifications' },
-      { id: 'quality-pillars', enabled: true, order: 8, title: 'Why Choose Maaza Printwala', subtitle: 'Industrial print standards and manual QC verification' },
+      { id: 'quality-pillars', enabled: true, order: 8, title: 'Why Choose Maza Printwala', subtitle: 'Industrial print standards and manual QC verification' },
       { id: 'faq', enabled: true, order: 9, title: 'Frequently Asked Questions', subtitle: 'Everything you need to know about preparing artwork and bulk orders' },
     ];
 

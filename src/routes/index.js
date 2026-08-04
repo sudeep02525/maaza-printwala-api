@@ -31,7 +31,7 @@ router.use('/cms', cmsRoutes);
 router.get('/health', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Maaza Printwala API is operational [Production v1.0.0]',
+    message: 'Maza Printwala API is operational [Production v1.0.0]',
     timestamp: new Date().toISOString(),
   });
 });

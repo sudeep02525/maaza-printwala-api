@@ -33,7 +33,7 @@ app.use('/api', routes);
 app.get('/', (req, res) => {
   res.status(200).json({
     success: true,
-    message: 'Welcome to Maaza Printwala Backend API [Production v1.0.0]',
+    message: 'Welcome to Maza Printwala Backend API [Production v1.0.0]',
     version: '1.0.0',
   });
 });
