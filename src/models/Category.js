@@ -1,5 +1,23 @@
 import mongoose from 'mongoose';
 
+const itemSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    slug: { type: String, required: true },
+    image: { type: String },
+    isNew: { type: Boolean, default: false },
+  },
+  { suppressReservedKeysWarning: true }
+);
+
+const subcategoryGroupSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true }, // e.g., "Paper Types", "Finishes"
+    items: [itemSchema]
+  },
+  { suppressReservedKeysWarning: true }
+);
+
 const categorySchema = new mongoose.Schema(
   {
     name: {
@@ -32,9 +50,11 @@ const categorySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    subcategoryGroups: [subcategoryGroupSchema]
   },
   {
     timestamps: true,
+    suppressReservedKeysWarning: true,
   }
 );
 
