@@ -52,8 +52,8 @@ const seed = async () => {
       { name: 'Non-Tearable Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
       { name: 'Velvet Touch Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
       { name: 'Pearl Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Kraft Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Diamond Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
+      { name: 'Kraft Visiting Cards', image: 'kraft_visiting_card.png' },
+      { name: 'Diamond Visiting Cards', image: 'diamond_visiting_card.png' },
       { name: 'QR Code Visiting Cards', image: 'standard_visiting_card_1785947757902.png' }
     ];
 
