@@ -22,6 +22,16 @@ const addressSchema = new mongoose.Schema(
     locality: {
       type: String,
     },
+    addressLine2: {
+      type: String,
+    },
+    landmark: {
+      type: String,
+    },
+    country: {
+      type: String,
+      default: 'India',
+    },
     city: {
       type: String,
       required: true,

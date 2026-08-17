@@ -1,4 +1,5 @@
 import express from 'express';
+import { uploadArtwork } from '../middleware/upload.middleware.js';
 import * as orderController from '../controllers/order.controller.js';
 import { optionalAuth } from '../middleware/auth.middleware.js';
 
@@ -9,6 +10,7 @@ router.use(optionalAuth);
 router.post('/exchange-tracking-token', orderController.exchangeTrackingToken);
 router.get('/track/:orderNumber', orderController.getOrderByNumber);
 router.get('/', orderController.getMyOrders);
+router.post('/', uploadArtwork.single('artwork'), orderController.createOrder);
 router.get('/:id', orderController.getOrderById);
 
 export default router;

@@ -126,3 +126,87 @@ export const getOrderById = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Direct Create Order API
+ */
+export const createOrder = async (req, res, next) => {
+  try {
+    const { productId, configuration, quantity, customerInfo } = req.body;
+    let parsedCustomerInfo = {};
+    if (typeof customerInfo === 'string') {
+       try { parsedCustomerInfo = JSON.parse(customerInfo); } catch(e) {}
+    } else {
+       parsedCustomerInfo = customerInfo;
+    }
+    let parsedConfig = {};
+    if (typeof configuration === 'string') {
+       try { parsedConfig = JSON.parse(configuration); } catch(e) {}
+    } else {
+       parsedConfig = configuration;
+    }
+
+    // Populate Product Info
+    const Product = (await import('../models/Product.js')).default;
+    const product = await Product.findById(productId);
+    if (!product) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Product not found');
+    }
+
+    let artwork = {};
+    if (req.file) {
+      artwork = {
+        fileId: req.file.filename,
+        fileUrl: `/uploads/artwork/${req.file.filename}`,
+        originalName: req.file.originalname,
+      };
+    } else if (req.body.artworkRef) {
+      let parsedRef = req.body.artworkRef;
+      if (typeof parsedRef === 'string') {
+         try { parsedRef = JSON.parse(parsedRef); } catch(e) {}
+      }
+      artwork = parsedRef;
+    }
+
+    const price = product.basePrice * (Number(quantity) || 1);
+
+    const newOrder = new Order({
+      orderNumber: 'ORD-' + Date.now() + '-' + Math.floor(Math.random() * 1000),
+      user: req.user ? req.user._id : null,
+      items: [{
+        product: product._id,
+        productNameSnapshot: product.name,
+        productImageSnapshot: product.images?.[0] || '',
+        configurationSnapshot: parsedConfig,
+        quantity: Number(quantity) || 1,
+        authoritativeUnitPrice: product.basePrice,
+        authoritativeLineTotal: price,
+        designType: 'UPLOAD',
+        artwork: artwork
+      }],
+      contactDetails: {
+        fullName: parsedCustomerInfo?.fullName || 'Guest User',
+        email: parsedCustomerInfo?.email || 'guest@example.com',
+        phone: parsedCustomerInfo?.phone || '0000000000',
+      },
+      deliveryAddress: {
+        fullName: parsedCustomerInfo?.fullName || 'Guest User',
+        phone: parsedCustomerInfo?.phone || '0000000000',
+        streetAddress: parsedCustomerInfo?.address || 'N/A',
+      },
+      billingDetails: {
+        sameAsDelivery: true,
+      },
+      authoritativeSubtotal: price,
+      deliveryCharge: 0,
+      finalPayableAmount: price,
+      paymentStatus: 'NOT_STARTED',
+      fulfilmentStatus: 'ORDER_RECEIVED',
+    });
+
+    await newOrder.save();
+    return sendSuccess(res, STATUS_CODES.CREATED, 'Order created successfully.', { order: newOrder });
+  } catch (error) {
+    next(error);
+  }
+};

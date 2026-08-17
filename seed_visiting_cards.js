@@ -44,6 +44,7 @@ const seedVisitingCards = async () => {
         category: category._id,
         shortDescription: `High-quality ${variant.toLowerCase()} visiting card perfect for networking.`,
         description: `Elevate your professional image with our ${name}. Crafted with precision and premium materials for a lasting impression.`,
+        keywords: [variant.toLowerCase(), 'visiting card', 'business card', 'networking', 'print', 'custom'],
         basePrice: Math.floor(Math.random() * 500) + 199,
         isActive: true,
         isFeatured: i % 5 === 0,

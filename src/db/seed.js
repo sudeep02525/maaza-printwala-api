@@ -55,100 +55,234 @@ const seedDatabase = async () => {
     console.log('Users seeded successfully.');
 
     // 2. Seed Categories (Commercial Printing Architecture)
-    const catBiz = await Category.create({
-      name: 'Business Cards & ID',
-      slug: 'business-cards',
-      description: 'Professional visiting cards, corporate letterheads, and PVC employee ID cards.',
-      isActive: true,
-      sortOrder: 1,
-    });
+    const categoryData = [
+      {
+        name: 'Visiting Cards',
+        slug: 'business-printing',
+        description: 'Professional visiting cards to make a lasting impression.',
+        image: '/images/banner_business_cards.png',
+        sortOrder: 1,
+        subcategoryGroups: [
+          {
+            name: 'Cards',
+            items: [
+              { name: 'Standard Cards', slug: 'standard-cards', image: '/images/subcategories/visiting_cards.png' },
+              { name: 'Premium Cards', slug: 'premium-cards', image: '/images/subcategories/premium_cards.png' }
+            ]
+          },
+          {
+            name: 'Paper Types',
+            items: [
+              { name: 'Matte Cards', slug: 'matte-cards' },
+              { name: 'Glossy Cards', slug: 'glossy-cards' },
+              { name: 'Velvet Cards', slug: 'velvet-cards' },
+              { name: 'Kraft Cards', slug: 'kraft-cards' },
+              { name: 'Pearl Cards', slug: 'pearl-cards' }
+            ]
+          },
+          {
+            name: 'Finishes',
+            items: [
+              { name: 'Spot UV Cards', slug: 'spot-uv-cards' },
+              { name: 'Raised Foil Cards', slug: 'raised-foil-cards' }
+            ]
+          },
+          {
+            name: 'Shapes',
+            items: [
+              { name: 'Rounded Corner Cards', slug: 'rounded-corner-cards' },
+              { name: 'Square Cards', slug: 'square-cards' },
+              { name: 'Circle Cards', slug: 'circle-cards' },
+              { name: 'Oval Cards', slug: 'oval-cards' },
+              { name: 'Custom Shape Cards', slug: 'custom-shape-cards' }
+            ]
+          },
+          {
+            name: 'Special',
+            items: [
+              { name: 'Transparent Cards', slug: 'transparent-cards' },
+              { name: 'Magnetic Cards', slug: 'magnetic-cards' },
+              { name: 'QR Visiting Cards', slug: 'qr-visiting-cards' }
+            ]
+          },
+          {
+            name: 'Accessories',
+            items: [
+              { name: 'Card Holder', slug: 'card-holder' },
+              { name: 'Bulk Orders', slug: 'bulk-orders' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Stationery',
+        slug: 'stationery',
+        description: 'Custom stationery items for your office and personal needs.',
+        image: '/images/banner_stationery.png',
+        sortOrder: 2,
+        subcategoryGroups: [
+          {
+            name: 'Office',
+            items: [
+              { name: 'Letterheads', slug: 'letterheads', image: '/images/subcategories/letterheads.png' },
+              { name: 'Envelopes', slug: 'envelopes', image: '/images/subcategories/envelopes.png' }
+            ]
+          },
+          {
+            name: 'Personal',
+            items: [
+              { name: 'Notebooks', slug: 'notebooks', image: '/images/subcategories/notepads.png' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Flyers & Brochures',
+        slug: 'flyers-brochures',
+        description: 'Promotional materials to help your business stand out.',
+        image: '/images/banner_flyers.png',
+        sortOrder: 3,
+        subcategoryGroups: [
+          {
+            name: 'Marketing',
+            items: [
+              { name: 'Flyers', slug: 'flyers', image: '/images/subcategories/flyers.png' },
+              { name: 'Bi-Fold Brochures', slug: 'bi-fold-brochures', image: '/images/subcategories/brochures.png' },
+              { name: 'Tri-Fold Brochures', slug: 'tri-fold-brochures', image: '/images/subcategories/brochures.png' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Packaging',
+        slug: 'packaging',
+        description: 'Custom packaging solutions to protect your products and promote your brand.',
+        image: '/images/banner_packaging.png',
+        sortOrder: 4,
+        subcategoryGroups: [
+          {
+            name: 'Bags',
+            items: [
+              { name: 'Paper Bags', slug: 'paper-bags', image: '/images/subcategories/paper_bags.png' }
+            ]
+          },
+          {
+            name: 'Boxes',
+            items: [
+              { name: 'Gift Boxes', slug: 'gift-boxes', image: '/images/subcategories/gift_boxes.png' },
+              { name: 'Shipping Boxes', slug: 'shipping-boxes', image: '/images/subcategories/shipping_boxes.png' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Labels & Stickers',
+        slug: 'labels-stickers',
+        description: 'Custom labels and stickers for all your packaging and branding needs.',
+        image: '/images/banner_labels.png',
+        sortOrder: 5,
+        subcategoryGroups: [
+          {
+            name: 'Stickers',
+            items: [
+              { name: 'Die-Cut Stickers', slug: 'die-cut-stickers', image: '/images/subcategories/die_cut_stickers.png' }
+            ]
+          },
+          {
+            name: 'Labels',
+            items: [
+              { name: 'Product Labels', slug: 'product-labels', image: '/images/subcategories/product_labels.png' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Signage & Banners',
+        slug: 'signage-banners',
+        description: 'High-impact indoor and outdoor signage, banners, and boards to capture attention.',
+        image: '/images/outdoor_banner.png',
+        sortOrder: 6,
+        subcategoryGroups: [
+          {
+            name: 'Outdoor',
+            items: [
+              { name: 'Vinyl Banners', slug: 'vinyl-banners', image: '/images/subcategories/vinyl.png' },
+              { name: 'Flex Banners', slug: 'flex-banners', image: '/images/subcategories/flex.png' }
+            ]
+          },
+          {
+            name: 'Indoor',
+            items: [
+              { name: 'Roll-Up Standees', slug: 'roll-up-standees', image: '/images/subcategories/standees.png' },
+              { name: 'Sunboard Printing', slug: 'sunboard-printing', image: '/images/subcategories/sunboard.png' },
+              { name: 'Foam Boards', slug: 'foam-boards', image: '/images/subcategories/acrylic.png' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Custom Apparel',
+        slug: 'custom-apparel',
+        description: 'Branded clothing and apparel for your team or events.',
+        image: '/images/banner_apparel.png',
+        sortOrder: 7,
+        subcategoryGroups: [
+          {
+            name: 'Shirts',
+            items: [
+              { name: 'T-Shirts', slug: 't-shirts', image: '/images/cat_tshirt_new_1785478181285.png' },
+              { name: 'Polo T-Shirts', slug: 'polo-t-shirts', image: '/images/cat_polo_new_1785478171451.png' }
+            ]
+          },
+          {
+            name: 'Winter Wear',
+            items: [
+              { name: 'Hoodies', slug: 'hoodies', image: '/images/subcategories/hoodies.png' }
+            ]
+          },
+          {
+            name: 'Headwear',
+            items: [
+              { name: 'Caps', slug: 'caps', image: '/images/subcategories/caps.png' }
+            ]
+          }
+        ]
+      },
+      {
+        name: 'Corporate Gifts',
+        slug: 'corporate-gifts',
+        description: 'Thoughtful customized gifts for clients and employees.',
+        image: '/images/banner_corporate.png',
+        sortOrder: 8,
+        subcategoryGroups: [
+          {
+            name: 'Drinkware',
+            items: [
+              { name: 'Coffee Mugs', slug: 'coffee-mugs', image: '/images/cat_mugs_new_1785478141544.png' },
+              { name: 'Water Bottles', slug: 'water-bottles', image: '/images/subcategories/water_bottles.png' }
+            ]
+          },
+          {
+            name: 'Tech',
+            items: [
+              { name: 'Pen Drives', slug: 'pen-drives', image: '/images/subcategories/pen_drives.png' }
+            ]
+          },
+          {
+            name: 'Stationery',
+            items: [
+              { name: 'Diaries & Organizers', slug: 'diaries-organizers', image: '/images/subcategories/notepads.png' }
+            ]
+          }
+        ]
+      }
+    ];
 
-    const subCatBiz = await Category.create({
-      name: 'Standard Visiting Cards',
-      slug: 'standard-visiting-cards',
-      description: 'Classic rectangular visiting cards for every business professional.',
-      parentId: catBiz._id,
-      isActive: true,
-      sortOrder: 1,
-    });
-
-    const subCatId = await Category.create({
-      name: 'PVC ID Cards & Lanyards',
-      slug: 'pvc-id-cards',
-      description: 'Durable contactless PVC employee identity cards with custom branded lanyards.',
-      parentId: catBiz._id,
-      isActive: true,
-      sortOrder: 2,
-    });
-
-    const catSignage = await Category.create({
-      name: 'Marketing & Outdoor Signage',
-      slug: 'marketing-signage',
-      description: 'High-impact outdoor flex banners, roll-up standees, and store displays.',
-      isActive: true,
-      sortOrder: 2,
-    });
-
-    const subCatSignage = await Category.create({
-      name: 'Flex Banners',
-      slug: 'flex-banners',
-      description: 'Custom sized durable outdoor flex banners with metal eyelets.',
-      parentId: catSignage._id,
-      isActive: true,
-      sortOrder: 1,
-    });
-
-    const subCatStandee = await Category.create({
-      name: 'Roll-Up Standees',
-      slug: 'roll-up-standees',
-      description: 'Portable aluminum roll-up standees ideal for exhibitions and trade shows.',
-      parentId: catSignage._id,
-      isActive: true,
-      sortOrder: 2,
-    });
-
-    const catApparel = await Category.create({
-      name: 'Custom Apparel & Gifts',
-      slug: 'custom-apparel',
-      description: 'Personalized cotton t-shirts, corporate clothing, and ceramic mugs.',
-      isActive: true,
-      sortOrder: 3,
-    });
-
-    const subCatApparel = await Category.create({
-      name: 'Cotton T-Shirts',
-      slug: 't-shirts',
-      description: 'Comfortable combed cotton tees with vibrant direct-to-garment custom printing.',
-      parentId: catApparel._id,
-      isActive: true,
-      sortOrder: 1,
-    });
-
-    const subCatMugs = await Category.create({
-      name: 'Ceramic Photo Mugs',
-      slug: 'ceramic-mugs',
-      description: 'Premium grade sublimation printed ceramic mugs for corporate gifting.',
-      parentId: catApparel._id,
-      isActive: true,
-      sortOrder: 2,
-    });
-
-    const catMarketing = await Category.create({
-      name: 'Flyers & Brochures',
-      slug: 'flyers-brochures',
-      description: 'Promotional leaflets, bi-fold brochures, and custom product stickers.',
-      isActive: true,
-      sortOrder: 4,
-    });
-
-    const subCatFlyers = await Category.create({
-      name: 'Promotional Flyers',
-      slug: 'promotional-flyers',
-      description: 'High-speed bulk flyer printing on glossy and matte art paper.',
-      parentId: catMarketing._id,
-      isActive: true,
-      sortOrder: 1,
-    });
+    const createdCategories = {};
+    for (const catData of categoryData) {
+      const category = await Category.create(catData);
+      createdCategories[category.slug] = category;
+    }
 
     console.log('Categories seeded successfully.');
 
@@ -157,7 +291,7 @@ const seedDatabase = async () => {
     const prodCards = await Product.create({
       name: 'Standard Visiting Cards (300 GSM Matte)',
       slug: 'visiting-cards',
-      category: subCatBiz._id,
+      category: createdCategories['business-printing']._id,
       shortDescription: 'Professional 300/350 GSM cards with crisp color printing and lamination options.',
       description: 'Elevate your professional impression with crisp, vibrant print quality on high-grade cardstock. Available in standard and classic dimensions with optional spot UV accents.',
       images: ['https://images.unsplash.com/photo-1594980596870-8aa52a78d8cd?auto=format&fit=crop&w=600&q=80'],
@@ -231,7 +365,7 @@ const seedDatabase = async () => {
     const prodBanners = await Product.create({
       name: 'Custom Outdoor Flex Banners',
       slug: 'flex-banners',
-      category: subCatSignage._id,
+      category: createdCategories['signage-banners']._id,
       shortDescription: 'Weather-resistant outdoor flex banners with custom dimensions and eyelets.',
       description: 'Durable weather-resistant banners with reinforced eyelets for secure mounting in outdoor advertising. Custom dimensions available from 1ft to 50ft.',
       images: ['https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80'],
@@ -306,7 +440,7 @@ const seedDatabase = async () => {
     const prodTshirts = await Product.create({
       name: 'Personalized 100% Cotton T-Shirts',
       slug: 't-shirts',
-      category: subCatApparel._id,
+      category: createdCategories['custom-apparel']._id,
       shortDescription: '100% combed cotton custom printed tees for corporate branding and teams.',
       description: 'Comfortable, durable custom apparel ideal for company events, team outings, and promotional branding. Features high-definition wash-resistant printing.',
       images: ['https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80'],
@@ -388,7 +522,7 @@ const seedDatabase = async () => {
     const prodIdCards = await Product.create({
       name: 'Executive PVC Employee ID Cards',
       slug: 'pvc-id-cards',
-      category: subCatId._id,
+      category: createdCategories['business-printing']._id,
       shortDescription: 'Durable 30-mil PVC ID cards with high-definition thermal printing.',
       description: 'Standard credit-card size (86 × 54 mm) PVC badges resistant to water and bending. Perfect for corporate employees, event passes, and school identity cards.',
       images: ['https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=600&q=80'],
@@ -451,7 +585,7 @@ const seedDatabase = async () => {
     const prodLetterheads = await Product.create({
       name: 'Executive Corporate Letterheads (A4)',
       slug: 'corporate-letterheads',
-      category: subCatBiz._id,
+      category: createdCategories['stationery']._id,
       shortDescription: '100 GSM Alabaster paper letterheads for official business correspondence.',
       description: 'Make official letters and invoices stand out with premium 100 GSM bond paper letterheads. Laser-printer compatible and smudge-free.',
       images: ['https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80'],
@@ -503,7 +637,7 @@ const seedDatabase = async () => {
     const prodStandee = await Product.create({
       name: 'Aluminum Roll-Up Exhibition Standee',
       slug: 'roll-up-standee',
-      category: subCatStandee._id,
+      category: createdCategories['signage-banners']._id,
       shortDescription: '6x2.5 ft retractable roll-up standee with durable aluminum stand and carry bag.',
       description: 'Quick-setup retractable standee printed on tear-resistant non-curl star flex or PET film. Essential for trade shows, retail entrances, and corporate presentations.',
       images: ['https://images.unsplash.com/photo-1542744094-3a3e2203538c?auto=format&fit=crop&w=600&q=80'],

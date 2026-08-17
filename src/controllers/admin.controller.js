@@ -49,17 +49,23 @@ export const getAllOrdersAdmin = async (req, res, next) => {
 export const updateOrderStatus = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { orderStatus, note } = req.body;
+    const { status, note } = req.body;
 
     const order = await Order.findById(id);
     if (!order) {
       return sendError(res, STATUS_CODES.NOT_FOUND, 'Order not found');
     }
 
-    order.orderStatus = orderStatus || order.orderStatus;
-    if (note) {
-      order.statusHistory.push({ status: order.orderStatus, note });
-    }
+    const oldStatus = order.fulfilmentStatus;
+    order.fulfilmentStatus = status || order.fulfilmentStatus;
+    
+    order.statusHistory.push({
+       previousStatus: oldStatus,
+       newStatus: order.fulfilmentStatus,
+       actorType: 'ADMIN',
+       note: note || ''
+    });
+    
     await order.save();
 
     return sendSuccess(res, STATUS_CODES.OK, 'Order status updated successfully', { order });

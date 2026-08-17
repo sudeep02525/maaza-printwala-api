@@ -67,8 +67,8 @@ const orderSchema = new mongoose.Schema(
     guestTokenRevoked: { type: Boolean, default: false }, // Support token revocation/rotation
 
     // Reference to source checkout and payment attempt
-    checkoutDraftId: { type: mongoose.Schema.Types.ObjectId, ref: 'CheckoutDraft', required: true, unique: true },
-    paymentAttemptId: { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentAttempt', required: true, unique: true },
+    checkoutDraftId: { type: mongoose.Schema.Types.ObjectId, ref: 'CheckoutDraft' },
+    paymentAttemptId: { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentAttempt' },
 
     // Immutable Item Snapshots
     items: [orderItemSnapshotSchema],
@@ -83,9 +83,12 @@ const orderSchema = new mongoose.Schema(
       fullName: String,
       phone: String,
       streetAddress: String,
+      addressLine2: String,
+      landmark: String,
       city: String,
       state: String,
       pinCode: String,
+      country: { type: String, default: 'India' },
     },
     billingDetails: {
       sameAsDelivery: { type: Boolean, default: true },
@@ -93,9 +96,12 @@ const orderSchema = new mongoose.Schema(
         fullName: String,
         phone: String,
         streetAddress: String,
+        addressLine2: String,
+        landmark: String,
         city: String,
         state: String,
         pinCode: String,
+        country: { type: String, default: 'India' },
       },
       isBusinessPurchase: { type: Boolean, default: false },
       companyName: String,

@@ -11,10 +11,12 @@ import cartRoutes from './cart.routes.js';
 import checkoutRoutes from './checkout.routes.js';
 import paymentRoutes from './payment.routes.js';
 import cmsRoutes from './cms.routes.js';
+import searchRoutes from './search.routes.js';
 
 const router = express.Router();
 
 router.use('/auth', authRoutes);
+router.use('/search', searchRoutes);
 router.use('/products', productRoutes);
 router.use('/categories', categoryRoutes);
 router.use('/templates', templateRoutes);

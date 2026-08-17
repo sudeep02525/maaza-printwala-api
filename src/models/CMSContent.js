@@ -24,6 +24,10 @@ const cmsContentSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    sortOrder: {
+      type: Number,
+      default: 0,
+    },
     isDemoData: {
       type: Boolean,
       default: true,

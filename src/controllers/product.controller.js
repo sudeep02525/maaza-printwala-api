@@ -5,33 +5,114 @@ import Category from '../models/Category.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 import { calculateProductPrice } from '../utils/pricing.util.js';
+import { searchProducts } from '../services/search.service.js';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import Fuse from 'fuse.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export const getSearchSuggestions = async (req, res, next) => {
+  try {
+    const { q } = req.query;
+    if (!q || q.length < 2) {
+      return sendSuccess(res, STATUS_CODES.OK, 'Query too short', { suggestions: [] });
+    }
+
+    // Fetch active products with minimal fields for lightweight response
+    const products = await Product.find({ isActive: true })
+      .select('name slug images basePrice keywords categoryName searchCount')
+      .lean();
+
+    const fuseOptions = {
+      keys: [
+        { name: 'name', weight: 0.6 },
+        { name: 'keywords', weight: 0.3 },
+        { name: 'categoryName', weight: 0.1 }
+      ],
+      includeScore: true,
+      threshold: 0.3, // Tolerate 1-2 letter typos
+      ignoreLocation: true,
+    };
+
+    const fuse = new Fuse(products, fuseOptions);
+    const searchResults = fuse.search(q);
+
+    // 1. Separate exact matches from fuzzy matches
+    const exactMatches = [];
+    const fuzzyMatches = [];
+    
+    const queryLower = q.toLowerCase();
+
+    searchResults.forEach(result => {
+      const p = result.item;
+      // Define exact match (name contains the exact query, or keyword exact match)
+      const isExact = p.name.toLowerCase().includes(queryLower) || 
+                      (p.keywords && p.keywords.some(k => k.toLowerCase() === queryLower)) ||
+                      (p.categoryName && p.categoryName.toLowerCase() === queryLower);
+      
+      if (isExact) {
+        exactMatches.push(p);
+      } else {
+        fuzzyMatches.push(p);
+      }
+    });
+    
+    // 2. Sort both arrays by popularity (searchCount)
+    exactMatches.sort((a, b) => (b.searchCount || 0) - (a.searchCount || 0));
+    fuzzyMatches.sort((a, b) => (b.searchCount || 0) - (a.searchCount || 0));
+
+    // 3. Combine them: Exact matches first, then fuzzy matches
+    let suggestions = [...exactMatches, ...fuzzyMatches];
+
+    // 4. Return top 8 results
+    suggestions = suggestions.slice(0, 8);
+
+    return sendSuccess(res, STATUS_CODES.OK, 'Suggestions fetched', { suggestions });
+  } catch (error) {
+    next(error);
+  }
+};
 
 export const getAllProducts = async (req, res, next) => {
   try {
     const { category, search, featured } = req.query;
-    const query = { isActive: true };
+    let categoryId = null;
 
     if (category) {
       if (category.match(/^[0-9a-fA-F]{24}$/)) {
-        query.category = category;
+        categoryId = category;
       } else {
         const catObj = await Category.findOne({ slug: category });
         if (catObj) {
-          query.category = catObj._id;
+          categoryId = catObj._id;
         } else {
           return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { products: [] });
         }
       }
     }
-    if (featured === 'true') {
-      query.isFeatured = true;
-    }
+
     if (search) {
-      query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { shortDescription: { $regex: search, $options: 'i' } },
-      ];
+       // Use our fast fuzzy search engine
+       let products = searchProducts(search);
+       
+       // Filter the fuzzy results if category or featured is requested
+       if (categoryId) {
+          products = products.filter(p => p.category && p.category._id.toString() === categoryId.toString());
+       }
+       if (featured === 'true') {
+          products = products.filter(p => p.isFeatured);
+       }
+       
+       return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { products });
     }
+
+    // Fallback to DB query if no search string
+    const query = { isActive: true };
+    if (categoryId) query.category = categoryId;
+    if (featured === 'true') query.isFeatured = true;
 
     const products = await Product.find(query).populate('category', 'name slug').sort({ updatedAt: -1 });
 
@@ -102,6 +183,117 @@ export const calculatePrice = async (req, res, next) => {
     const priceResult = calculateProductPrice(pricingRule, attributeSchema, configuration || {}, Number(quantity) || 100);
 
     return sendSuccess(res, STATUS_CODES.OK, 'Price calculated successfully', priceResult);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const createProduct = async (req, res, next) => {
+  try {
+    const { name, slug, category, shortDescription, description, basePrice, artworkRequirements } = req.body;
+    
+    // Process uploaded files
+    const images = [];
+    if (req.files && req.files.length > 0) {
+      req.files.forEach(file => {
+        // Save relative path
+        images.push(`/images/products/${file.filename}`);
+      });
+    }
+
+    let parsedArtworkReq = undefined;
+    if (artworkRequirements) {
+      try {
+        parsedArtworkReq = JSON.parse(artworkRequirements);
+      } catch (e) {
+        // Ignore
+      }
+    }
+
+    const newProduct = new Product({
+      name,
+      slug,
+      category,
+      shortDescription,
+      description,
+      basePrice: Number(basePrice) || 0,
+      images,
+      artworkRequirements: parsedArtworkReq
+    });
+
+    await newProduct.save();
+
+    return sendSuccess(res, STATUS_CODES.CREATED, 'Product created successfully', { product: newProduct });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const updateData = { ...req.body };
+    
+    if (updateData.artworkRequirements && typeof updateData.artworkRequirements === 'string') {
+      try {
+        updateData.artworkRequirements = JSON.parse(updateData.artworkRequirements);
+      } catch (e) {}
+    }
+
+    const product = await Product.findById(id);
+    if (!product) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Product not found');
+    }
+
+    // If new images are uploaded
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(file => `/images/products/${file.filename}`);
+      
+      // Optionally delete old images from filesystem here
+      if (product.images && product.images.length > 0) {
+        product.images.forEach(imgUrl => {
+          const fileName = path.basename(imgUrl);
+          const filePath = path.join(__dirname, '..', '..', 'public', 'images', 'products', fileName);
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      }
+
+      updateData.images = newImages;
+    }
+
+    const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
+    
+    return sendSuccess(res, STATUS_CODES.OK, 'Product updated successfully', { product: updatedProduct });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteProduct = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const product = await Product.findById(id);
+    
+    if (!product) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Product not found');
+    }
+
+    // Delete images
+    if (product.images && product.images.length > 0) {
+      product.images.forEach(imgUrl => {
+        const fileName = path.basename(imgUrl);
+        const filePath = path.join(__dirname, '..', '..', 'public', 'images', 'products', fileName);
+        if (fs.existsSync(filePath)) {
+          fs.unlinkSync(filePath);
+        }
+      });
+    }
+
+    await Product.findByIdAndDelete(id);
+    
+    return sendSuccess(res, STATUS_CODES.OK, 'Product deleted successfully', null);
   } catch (error) {
     next(error);
   }
