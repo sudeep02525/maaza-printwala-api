@@ -1,12 +1,15 @@
 import Fuse from 'fuse.js';
 import Product from '../models/Product.js';
 import Category from '../models/Category.js';
+import SearchLog from '../models/SearchLog.js';
 
 let productFuse = null;
 let suggestionFuse = null;
 
 let productsCache = [];
 let categoriesCache = [];
+let popularCache = [];
+let lastPopularFetch = 0;
 
 // Static Popular Searches (Could be moved to DB later)
 const POPULAR_SEARCHES = [
@@ -112,11 +115,27 @@ export const searchProducts = (query) => {
   return results.map(result => result.item);
 };
 
-export const getSuggestions = (query, limit = 8) => {
+export const getTrending = async (limit = 6) => {
+  const now = Date.now();
+  if (popularCache.length > 0 && (now - lastPopularFetch) < 5 * 60 * 1000) {
+    return popularCache;
+  }
+  const rows = await SearchLog.find().sort({ count: -1, lastSearchedAt: -1 }).limit(limit).lean();
+  if (!rows.length) {
+    popularCache = POPULAR_SEARCHES.slice(0, limit).map((t) => ({ term: t, type: 'popular' }));
+  } else {
+    popularCache = rows.map((r) => ({ term: r.term, type: 'popular' }));
+  }
+  lastPopularFetch = now;
+  return popularCache;
+};
+
+export const getSuggestions = async (query, limit = 8) => {
   const q = (query || '').trim();
   if (!q) {
+    const popular = await getTrending(6);
     return {
-      popular: POPULAR_SEARCHES.slice(0, 6),
+      popular,
       categories: categoriesCache.slice(0, 6).map((c) => ({ name: c.name, slug: c.slug })),
       products: [],
       keywords: [],
