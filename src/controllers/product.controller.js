@@ -144,8 +144,9 @@ export const calculatePrice = async (req, res, next) => {
 
 export const createProduct = async (req, res, next) => {
   try {
-    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements } = req.body;
-    
+    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements, attributes, quantityTiers, pricingRule } = req.body;
+    const parse = (v, fallback) => { try { return v ? JSON.parse(v) : fallback; } catch { return fallback; } };
+
     // Process uploaded files
     const images = [];
     if (req.files && req.files.length > 0) {
@@ -153,15 +154,6 @@ export const createProduct = async (req, res, next) => {
         // Save relative path
         images.push(`/images/products/${file.filename}`);
       });
-    }
-
-    let parsedArtworkReq = undefined;
-    if (artworkRequirements) {
-      try {
-        parsedArtworkReq = JSON.parse(artworkRequirements);
-      } catch (e) {
-        // Ignore
-      }
     }
 
     const newProduct = new Product({
@@ -173,27 +165,28 @@ export const createProduct = async (req, res, next) => {
       basePrice: Number(basePrice) || 0,
       mrp: mrp !== undefined ? Number(mrp) : null,
       images,
-      artworkRequirements: parsedArtworkReq
+      artworkRequirements: parse(artworkRequirements, undefined)
     });
 
     await newProduct.save();
     
-    // Create a default PricingRule so the product is orderable
-    const defaultPricingRule = new PricingRule({
+    // Create PricingRule (provided or default)
+    const pr = parse(pricingRule, null);
+    await PricingRule.create({
       product: newProduct._id,
-      basePrice: newProduct.basePrice,
-      quantityBreaks: [],
-      attributeModifiers: []
+      basePrice: pr?.basePrice ?? newProduct.basePrice,
+      quantityBreaks: pr?.quantityBreaks ?? [],
+      attributeModifiers: pr?.attributeModifiers ?? []
     });
-    await defaultPricingRule.save();
 
-    // Create a default ProductAttributeSchema
-    const defaultSchema = new ProductAttributeSchema({
+    // Create ProductAttributeSchema (provided or default)
+    const attrs = parse(attributes, []);
+    const tiers = parse(quantityTiers, [100, 250, 500, 1000]);
+    await ProductAttributeSchema.create({
       product: newProduct._id,
-      attributes: [],
-      quantityTiers: [100, 250, 500, 1000] // sensible defaults
+      attributes: attrs,
+      quantityTiers: tiers
     });
-    await defaultSchema.save();
 
     // Re-index search asynchronously
     refreshIndex().catch(err => console.error('Index refresh failed:', err));
@@ -291,4 +284,43 @@ export const deleteProduct = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const updateProductSchema = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { attributes, quantityTiers } = req.body;
+    const schema = await ProductAttributeSchema.findOneAndUpdate(
+      { product: id },
+      { attributes: attributes || [], quantityTiers: quantityTiers || [100, 250, 500, 1000] },
+      { new: true, upsert: true }
+    );
+    return sendSuccess(res, STATUS_CODES.OK, 'Schema updated', { schema });
+  } catch (e) { next(e); }
+};
+
+export const updateProductPricing = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const { basePrice, quantityBreaks, attributeModifiers } = req.body;
+    const rule = await PricingRule.findOneAndUpdate(
+      { product: id },
+      { basePrice, quantityBreaks: quantityBreaks || [], attributeModifiers: attributeModifiers || [] },
+      { new: true, upsert: true }
+    );
+    return sendSuccess(res, STATUS_CODES.OK, 'Pricing updated', { pricingRule: rule });
+  } catch (e) { next(e); }
+};
+
+export const getProductFull = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const [product, schema, pricingRule] = await Promise.all([
+      Product.findById(id).populate('category', 'name slug'),
+      ProductAttributeSchema.findOne({ product: id }),
+      PricingRule.findOne({ product: id }),
+    ]);
+    if (!product) return sendError(res, STATUS_CODES.NOT_FOUND, 'Product not found');
+    return sendSuccess(res, STATUS_CODES.OK, 'Product fetched', { product, schema, pricingRule });
+  } catch (e) { next(e); }
 };

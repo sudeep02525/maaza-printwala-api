@@ -10,6 +10,12 @@ const router = express.Router();
 
 router.get('/', productController.getAllProducts);
 router.get('/suggestions', searchController.getSearchSuggestions);
+
+// Admin read/update full product data
+router.get('/:id/full', authenticate, authorize(ROLES.ADMIN), productController.getProductFull);
+router.put('/:id/schema', authenticate, authorize(ROLES.ADMIN), productController.updateProductSchema);
+router.put('/:id/pricing', authenticate, authorize(ROLES.ADMIN), productController.updateProductPricing);
+
 router.get('/:id', productController.getProductByIdOrSlug);
 router.get('/:id/schema', productController.getProductSchema);
 router.post('/:id/price', productController.calculatePrice);
