@@ -19,11 +19,16 @@ export const getSearchSuggestions = async (req, res, next) => {
 
 export const logSearch = async (req, res, next) => {
   try {
-    const term = (req.body.term || '').trim().toLowerCase();
+    const rawTerm = (req.body.originalTerm || req.body.term || '').trim();
+    const term = rawTerm.toLowerCase();
+    
     if (term.length >= 2) {
       await SearchLog.findOneAndUpdate(
         { term },
-        { $inc: { count: 1 }, $set: { lastSearchedAt: new Date() } },
+        { 
+          $inc: { count: 1 }, 
+          $set: { lastSearchedAt: new Date(), displayTerm: rawTerm } 
+        },
         { upsert: true }
       );
     }

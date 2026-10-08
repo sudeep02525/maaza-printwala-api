@@ -124,7 +124,7 @@ export const getTrending = async (limit = 6) => {
   if (!rows.length) {
     popularCache = POPULAR_SEARCHES.slice(0, limit).map((t) => ({ term: t, type: 'popular' }));
   } else {
-    popularCache = rows.map((r) => ({ term: r.term, type: 'popular' }));
+    popularCache = rows.map((r) => ({ term: r.displayTerm || r.term, type: 'popular' }));
   }
   lastPopularFetch = now;
   return popularCache;
