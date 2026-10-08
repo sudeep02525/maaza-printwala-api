@@ -57,6 +57,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    mrp: {
+      type: Number,
+      default: null,
+    },
     isActive: {
       type: Boolean,
       default: true,

@@ -14,67 +14,7 @@ import Fuse from 'fuse.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export const getSearchSuggestions = async (req, res, next) => {
-  try {
-    const { q } = req.query;
-    if (!q || q.length < 2) {
-      return sendSuccess(res, STATUS_CODES.OK, 'Query too short', { suggestions: [] });
-    }
 
-    // Fetch active products with minimal fields for lightweight response
-    const products = await Product.find({ isActive: true })
-      .select('name slug images basePrice keywords categoryName searchCount')
-      .lean();
-
-    const fuseOptions = {
-      keys: [
-        { name: 'name', weight: 0.6 },
-        { name: 'keywords', weight: 0.3 },
-        { name: 'categoryName', weight: 0.1 }
-      ],
-      includeScore: true,
-      threshold: 0.3, // Tolerate 1-2 letter typos
-      ignoreLocation: true,
-    };
-
-    const fuse = new Fuse(products, fuseOptions);
-    const searchResults = fuse.search(q);
-
-    // 1. Separate exact matches from fuzzy matches
-    const exactMatches = [];
-    const fuzzyMatches = [];
-    
-    const queryLower = q.toLowerCase();
-
-    searchResults.forEach(result => {
-      const p = result.item;
-      // Define exact match (name contains the exact query, or keyword exact match)
-      const isExact = p.name.toLowerCase().includes(queryLower) || 
-                      (p.keywords && p.keywords.some(k => k.toLowerCase() === queryLower)) ||
-                      (p.categoryName && p.categoryName.toLowerCase() === queryLower);
-      
-      if (isExact) {
-        exactMatches.push(p);
-      } else {
-        fuzzyMatches.push(p);
-      }
-    });
-    
-    // 2. Sort both arrays by popularity (searchCount)
-    exactMatches.sort((a, b) => (b.searchCount || 0) - (a.searchCount || 0));
-    fuzzyMatches.sort((a, b) => (b.searchCount || 0) - (a.searchCount || 0));
-
-    // 3. Combine them: Exact matches first, then fuzzy matches
-    let suggestions = [...exactMatches, ...fuzzyMatches];
-
-    // 4. Return top 8 results
-    suggestions = suggestions.slice(0, 8);
-
-    return sendSuccess(res, STATUS_CODES.OK, 'Suggestions fetched', { suggestions });
-  } catch (error) {
-    next(error);
-  }
-};
 
 export const getAllProducts = async (req, res, next) => {
   try {
@@ -204,7 +144,7 @@ export const calculatePrice = async (req, res, next) => {
 
 export const createProduct = async (req, res, next) => {
   try {
-    const { name, slug, category, shortDescription, description, basePrice, artworkRequirements } = req.body;
+    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements } = req.body;
     
     // Process uploaded files
     const images = [];
@@ -231,6 +171,7 @@ export const createProduct = async (req, res, next) => {
       shortDescription,
       description,
       basePrice: Number(basePrice) || 0,
+      mrp: mrp !== undefined ? Number(mrp) : null,
       images,
       artworkRequirements: parsedArtworkReq
     });
@@ -249,7 +190,7 @@ export const createProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, slug, category, shortDescription, description, basePrice, artworkRequirements, isActive, isFeatured } = req.body;
+    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements, isActive, isFeatured } = req.body;
     
     const updateData = {};
     if (name !== undefined) updateData.name = name;
@@ -258,12 +199,13 @@ export const updateProduct = async (req, res, next) => {
     if (shortDescription !== undefined) updateData.shortDescription = shortDescription;
     if (description !== undefined) updateData.description = description;
     if (basePrice !== undefined) updateData.basePrice = Number(basePrice);
+    if (mrp !== undefined) updateData.mrp = Number(mrp);
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
     if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
     
     if (artworkRequirements && typeof artworkRequirements === 'string') {
       try {
-        updateData.artworkRequirements = JSON.parse(updateData.artworkRequirements);
+        updateData.artworkRequirements = JSON.parse(artworkRequirements);
       } catch (e) {}
     }
 

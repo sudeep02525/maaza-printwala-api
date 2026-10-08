@@ -7,12 +7,22 @@ import path from 'path';
 import { connectDB } from './src/config/db.js';
 import routes from './src/routes/index.js';
 import { errorHandler } from './src/middleware/error.middleware.js';
+import helmet from 'helmet';
+import mongoSanitize from 'express-mongo-sanitize';
+import compression from 'compression';
 
 const app = express();
 
+// Hardening Middlewares
+app.use(helmet({
+  crossOriginResourcePolicy: false, // allow images to be loaded cross-origin if needed
+}));
+app.use(mongoSanitize());
+app.use(compression());
+
 // Middlewares
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
 app.use(cookieParser());
 import { authenticate } from './src/middleware/auth.middleware.js';
 
