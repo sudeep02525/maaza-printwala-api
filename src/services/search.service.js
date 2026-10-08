@@ -112,37 +112,37 @@ export const searchProducts = (query) => {
   return results.map(result => result.item);
 };
 
-export const getSuggestions = (query) => {
-  const q = query ? query.trim().toLowerCase() : '';
-  
+export const getSuggestions = (query, limit = 8) => {
+  const q = (query || '').trim();
   if (!q) {
     return {
-      popular: POPULAR_SEARCHES.slice(0, 5),
-      categories: categoriesCache.slice(0, 4).map(c => c.name),
-      matches: []
+      popular: POPULAR_SEARCHES.slice(0, 6),
+      categories: categoriesCache.slice(0, 6).map((c) => ({ name: c.name, slug: c.slug })),
+      products: [],
+      keywords: [],
     };
   }
 
-  // Use the dedicated canonical suggestion index!
-  const results = suggestionFuse.search(q);
-  
-  const categories = [];
-  const matches = [];
-  
-  // Dedup logic just in case
-  results.slice(0, 10).forEach(r => {
-     if (r.item.type === 'category') {
-        if (!categories.includes(r.item.term)) categories.push(r.item.term);
-     } else {
-        if (!matches.includes(r.item.term)) matches.push(r.item.term);
-     }
-  });
+  const products = (productFuse ? productFuse.search(q).slice(0, limit) : []).map((r) => ({
+    _id: r.item._id,
+    name: r.item.name,
+    slug: r.item.slug,
+    categoryName: r.item.category?.name || r.item.categoryName || '',
+    image: Array.isArray(r.item.images) ? (r.item.images[0]?.url || r.item.images[0] || null) : null,
+    startingPrice: r.item.basePrice || 0,
+  }));
 
-  return {
-    popular: [],
-    categories,
-    matches: matches.slice(0, 8) // Limit matches
-  };
+  const lower = q.toLowerCase();
+  const categories = categoriesCache
+    .filter((c) => c.name.toLowerCase().includes(lower))
+    .slice(0, 3)
+    .map((c) => ({ name: c.name, slug: c.slug }));
+
+  const keywords = (suggestionFuse ? suggestionFuse.search(q).slice(0, 5) : [])
+    .map((r) => r.item.term)
+    .filter((t) => !products.some((p) => p.name === t));
+
+  return { popular: [], categories, products, keywords };
 };
 
 // Force a refresh (e.g. after adding new products)

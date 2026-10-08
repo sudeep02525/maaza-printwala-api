@@ -10,25 +10,9 @@ import { errorHandler } from './src/middleware/error.middleware.js';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import compression from 'compression';
-
-const app = express();
-
-// Hardening Middlewares
-app.use(helmet({
-  crossOriginResourcePolicy: false, // allow images to be loaded cross-origin if needed
-}));
-app.use(mongoSanitize());
-app.use(compression());
-
-// Middlewares
-app.use(express.json({ limit: '1mb' }));
-app.use(express.urlencoded({ extended: true, limit: '1mb' }));
-app.use(cookieParser());
 import { authenticate } from './src/middleware/auth.middleware.js';
 
-app.use('/uploads/artwork', authenticate, express.static(path.resolve('public/uploads/artwork')));
-app.use('/uploads', express.static(path.resolve('public/uploads')));
-app.use('/images', express.static(path.resolve('public/images')));
+const app = express();
 
 const allow = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',');
 app.use(
@@ -37,6 +21,33 @@ app.use(
     credentials: true,
   })
 );
+
+// Hardening Middlewares
+app.use(helmet({
+  crossOriginResourcePolicy: { policy: "cross-origin" },
+  crossOriginOpenerPolicy: { policy: "unsafe-none" },
+}));
+app.use((req, res, next) => {
+  // Express 5 makes req.query a getter-only property on the prototype.
+  // We shadow it on the instance to allow express-mongo-sanitize to mutate it.
+  const originalQuery = req.query;
+  Object.defineProperty(req, 'query', {
+    value: originalQuery,
+    writable: true,
+    configurable: true
+  });
+  next();
+});
+app.use(mongoSanitize());
+app.use(compression());
+
+// Middlewares
+app.use(express.json({ limit: '1mb' }));
+app.use(express.urlencoded({ extended: true, limit: '1mb' }));
+app.use(cookieParser());
+app.use('/uploads/artwork', authenticate, express.static(path.resolve('public/uploads/artwork')));
+app.use('/uploads', express.static(path.resolve('public/uploads')));
+app.use('/images', express.static(path.resolve('public/images')));
 
 import { initSearchEngine } from './src/services/search.service.js';
 
