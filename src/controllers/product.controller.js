@@ -144,7 +144,7 @@ export const calculatePrice = async (req, res, next) => {
 
 export const createProduct = async (req, res, next) => {
   try {
-    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements, attributes, quantityTiers, pricingRule } = req.body;
+    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements, attributes, quantityTiers, pricingRule, metaTitle, metaDescription, keywords } = req.body;
     const parse = (v, fallback) => { try { return v ? JSON.parse(v) : fallback; } catch { return fallback; } };
 
     // Process uploaded files
@@ -165,7 +165,10 @@ export const createProduct = async (req, res, next) => {
       basePrice: Number(basePrice) || 0,
       mrp: mrp !== undefined ? Number(mrp) : null,
       images,
-      artworkRequirements: parse(artworkRequirements, undefined)
+      artworkRequirements: parse(artworkRequirements, undefined),
+      metaTitle,
+      metaDescription,
+      keywords: keywords ? (typeof keywords === 'string' ? keywords.split(',').map(k => k.trim()) : keywords) : undefined
     });
 
     await newProduct.save();
@@ -200,7 +203,7 @@ export const createProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements, isActive, isFeatured } = req.body;
+    const { name, slug, category, shortDescription, description, basePrice, mrp, artworkRequirements, isActive, isFeatured, metaTitle, metaDescription, keywords } = req.body;
     
     const updateData = {};
     if (name !== undefined) updateData.name = name;
@@ -212,6 +215,9 @@ export const updateProduct = async (req, res, next) => {
     if (mrp !== undefined) updateData.mrp = Number(mrp);
     if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
     if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
+    if (metaTitle !== undefined) updateData.metaTitle = metaTitle;
+    if (metaDescription !== undefined) updateData.metaDescription = metaDescription;
+    if (keywords !== undefined) updateData.keywords = typeof keywords === 'string' ? keywords.split(',').map(k => k.trim()) : keywords;
     
     if (artworkRequirements && typeof artworkRequirements === 'string') {
       try {

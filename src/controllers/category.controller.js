@@ -23,3 +23,38 @@ export const getCategoryBySlug = async (req, res, next) => {
     next(error);
   }
 };
+
+export const createCategory = async (req, res, next) => {
+  try {
+    const category = await Category.create(req.body);
+    return sendSuccess(res, STATUS_CODES.CREATED, 'Category created successfully', { category });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findByIdAndUpdate(id, req.body, { new: true, runValidators: true });
+    if (!category) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Category not found');
+    }
+    return sendSuccess(res, STATUS_CODES.OK, 'Category updated successfully', { category });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteCategory = async (req, res, next) => {
+  try {
+    const { id } = req.params;
+    const category = await Category.findByIdAndDelete(id);
+    if (!category) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Category not found');
+    }
+    return sendSuccess(res, STATUS_CODES.OK, 'Category deleted successfully', { category });
+  } catch (error) {
+    next(error);
+  }
+};
