@@ -1,5 +1,16 @@
 import jwt from 'jsonwebtoken';
 
+if (process.env.NODE_ENV === 'production') {
+  if (!process.env.ACCESS_TOKEN_SECRET || process.env.ACCESS_TOKEN_SECRET === 'dev_access_secret_key_change_in_prod') {
+    throw new Error('ACCESS_TOKEN_SECRET must be set in production');
+  }
+  if (!process.env.REFRESH_TOKEN_SECRET || process.env.REFRESH_TOKEN_SECRET === 'dev_refresh_secret_key_change_in_prod') {
+    throw new Error('REFRESH_TOKEN_SECRET must be set in production');
+  }
+}
+
+const getAccessSecret = () => process.env.ACCESS_TOKEN_SECRET || 'dev_access_secret_key_change_in_prod';
+const getRefreshSecret = () => process.env.REFRESH_TOKEN_SECRET || 'dev_refresh_secret_key_change_in_prod';
 
 export const generateAccessToken = (user) => {
   return jwt.sign(
@@ -7,7 +18,7 @@ export const generateAccessToken = (user) => {
       id: user._id,
       role: user.role,
     },
-    process.env.ACCESS_TOKEN_SECRET || 'dev_access_secret_key_change_in_prod',
+    getAccessSecret(),
     { expiresIn: process.env.ACCESS_TOKEN_EXPIRES || '15m' }
   );
 };
@@ -17,14 +28,14 @@ export const generateRefreshToken = (user) => {
     {
       id: user._id,
     },
-    process.env.REFRESH_TOKEN_SECRET || 'dev_refresh_secret_key_change_in_prod',
+    getRefreshSecret(),
     { expiresIn: process.env.REFRESH_TOKEN_EXPIRES || '7d' }
   );
 };
 
 export const verifyAccessToken = (token) => {
   try {
-    return jwt.verify(token, process.env.ACCESS_TOKEN_SECRET || 'dev_access_secret_key_change_in_prod');
+    return jwt.verify(token, getAccessSecret());
   } catch (error) {
     return null;
   }
@@ -32,7 +43,7 @@ export const verifyAccessToken = (token) => {
 
 export const verifyRefreshToken = (token) => {
   try {
-    return jwt.verify(token, process.env.REFRESH_TOKEN_SECRET || 'dev_refresh_secret_key_change_in_prod');
+    return jwt.verify(token, getRefreshSecret());
   } catch (error) {
     return null;
   }

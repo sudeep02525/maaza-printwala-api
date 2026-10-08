@@ -15,7 +15,7 @@ import { STATUS_CODES } from '../constants/error.constants.js';
  */
 export const resolveSession = (req, res) => {
   let sessionId = req.cookies?.maaza_cart_session;
-  if (!sessionId && req.headers['x-cart-session-id']) {
+  if (!sessionId && process.env.NODE_ENV !== 'production' && req.headers['x-cart-session-id']) {
     sessionId = req.headers['x-cart-session-id'];
   }
   let query = {};
@@ -154,7 +154,11 @@ export const validateAndPriceItem = async (productId, configuration, quantity, d
       if (!allowedKeys.includes(key)) {
         throw { status: 400, message: `Invalid custom field key submitted: '${key}'. Allowed keys: ${allowedKeys.join(', ')}` };
       }
-      cleanFields[key] = String(incomingFields[key]);
+      const val = String(incomingFields[key]);
+      if (val.length > 1000) {
+        throw { status: 400, message: `Custom field '${key}' exceeds maximum length of 1000 characters.` };
+      }
+      cleanFields[key] = val;
     });
     authTemplate = {
       templateId: tmplObj._id,
@@ -313,4 +317,23 @@ export const clearCart = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+
+export const mergeCartOnLogin = async (userId, sessionId) => {
+  if (!sessionId) return;
+  const guestCart = await Cart.findOne({ sessionId, user: null });
+  if (!guestCart || guestCart.items.length === 0) return;
+
+  let userCart = await Cart.findOne({ user: userId });
+  if (!userCart) {
+    userCart = new Cart({ user: userId, items: [], cartTotal: 0 });
+  }
+
+  // Merge items
+  guestCart.items.forEach(item => userCart.items.push(item));
+  recalculateCartTotal(userCart);
+  await userCart.save();
+
+  // Delete guest cart
+  await Cart.deleteOne({ _id: guestCart._id });
 };

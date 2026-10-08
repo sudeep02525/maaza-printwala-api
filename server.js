@@ -14,12 +14,16 @@ const app = express();
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(cookieParser());
+import { authenticate } from './src/middleware/auth.middleware.js';
+
+app.use('/uploads/artwork', authenticate, express.static(path.resolve('public/uploads/artwork')));
 app.use('/uploads', express.static(path.resolve('public/uploads')));
 app.use('/images', express.static(path.resolve('public/images')));
 
+const allow = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',');
 app.use(
   cors({
-    origin: true,
+    origin: (o, cb) => cb(null, !o || allow.includes(o)),
     credentials: true,
   })
 );

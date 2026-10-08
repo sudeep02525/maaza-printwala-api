@@ -17,9 +17,9 @@ export const getDashboardStats = async (req, res, next) => {
 
     // Calculate total order revenue
     const orders = await Order.find({ paymentStatus: { $in: ['PAID', 'PENDING'] } });
-    const totalRevenue = orders.reduce((acc, order) => acc + (order.totalAmount || 0), 0);
+    const totalRevenue = orders.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
 
-    const pendingArtworkReviews = await Order.countDocuments({ 'items.artworkStatus': 'PENDING' });
+    const pendingArtworkReviews = await Order.countDocuments({ 'items.artworkStatus': 'PENDING_REVIEW' });
 
     return sendSuccess(res, STATUS_CODES.OK, 'Admin stats fetched successfully', {
       stats: {
@@ -39,8 +39,23 @@ export const getDashboardStats = async (req, res, next) => {
 
 export const getAllOrdersAdmin = async (req, res, next) => {
   try {
-    const orders = await Order.find().sort({ createdAt: -1 }).populate('user', 'name email phone');
-    return sendSuccess(res, STATUS_CODES.OK, 'All orders fetched successfully', { orders });
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const skip = (page - 1) * limit;
+
+    const orders = await Order.find()
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .populate('user', 'name email phone')
+      .lean();
+      
+    const total = await Order.countDocuments();
+    
+    return sendSuccess(res, STATUS_CODES.OK, 'All orders fetched successfully', { 
+      orders, 
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (error) {
     next(error);
   }

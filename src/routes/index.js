@@ -13,9 +13,31 @@ import paymentRoutes from './payment.routes.js';
 import cmsRoutes from './cms.routes.js';
 import searchRoutes from './search.routes.js';
 
+import rateLimit from 'express-rate-limit';
+
 const router = express.Router();
 
-router.use('/auth', authRoutes);
+const globalLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 1000,
+  message: { success: false, message: 'Too many requests, please try again later.' }
+});
+
+const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: { success: false, message: 'Too many authentication attempts, please try again later.' }
+});
+
+const uploadLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 50,
+  message: { success: false, message: 'Too many uploads, please try again later.' }
+});
+
+router.use(globalLimiter);
+
+router.use('/auth', authLimiter, authRoutes);
 router.use('/search', searchRoutes);
 router.use('/products', productRoutes);
 router.use('/categories', categoryRoutes);
@@ -23,7 +45,7 @@ router.use('/templates', templateRoutes);
 router.use('/projects', projectRoutes);
 router.use('/orders', orderRoutes);
 router.use('/admin', adminRoutes);
-router.use('/upload', uploadRoutes);
+router.use('/upload', uploadLimiter, uploadRoutes);
 router.use('/cart', cartRoutes);
 router.use('/checkout', checkoutRoutes);
 router.use('/payments', paymentRoutes);

@@ -10,7 +10,6 @@ router.use(optionalAuth);
 router.post('/exchange-tracking-token', orderController.exchangeTrackingToken);
 router.get('/track/:orderNumber', orderController.getOrderByNumber);
 router.get('/', orderController.getMyOrders);
-router.post('/', uploadArtwork.single('artwork'), orderController.createOrder);
 router.get('/:id', orderController.getOrderById);
 
 export default router;

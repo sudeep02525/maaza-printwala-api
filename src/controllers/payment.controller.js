@@ -91,6 +91,10 @@ export const initiatePayment = async (req, res, next) => {
  */
 export const confirmPaymentDemo = async (req, res, next) => {
   try {
+    if (process.env.ENABLE_TEST_PAYMENTS !== 'true') {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Demo payments are disabled in this environment.');
+    }
+
     const { sessionId } = resolveSession(req, res);
     const { attemptId, verificationMethod = 'TEST_DEMO' } = req.body;
 

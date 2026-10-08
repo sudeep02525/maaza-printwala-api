@@ -5,7 +5,7 @@ import Category from '../models/Category.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 import { calculateProductPrice } from '../utils/pricing.util.js';
-import { searchProducts } from '../services/search.service.js';
+import { searchProducts, refreshIndex } from '../services/search.service.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -114,9 +114,23 @@ export const getAllProducts = async (req, res, next) => {
     if (categoryId) query.category = categoryId;
     if (featured === 'true') query.isFeatured = true;
 
-    const products = await Product.find(query).populate('category', 'name slug').sort({ updatedAt: -1 });
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const skip = (page - 1) * limit;
 
-    return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { products });
+    const products = await Product.find(query)
+      .populate('category', 'name slug')
+      .sort({ updatedAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+      
+    const total = await Product.countDocuments(query);
+
+    return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { 
+      products,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
   } catch (error) {
     next(error);
   }
@@ -222,6 +236,9 @@ export const createProduct = async (req, res, next) => {
     });
 
     await newProduct.save();
+    
+    // Re-index search asynchronously
+    refreshIndex().catch(err => console.error('Index refresh failed:', err));
 
     return sendSuccess(res, STATUS_CODES.CREATED, 'Product created successfully', { product: newProduct });
   } catch (error) {
@@ -232,9 +249,19 @@ export const createProduct = async (req, res, next) => {
 export const updateProduct = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const updateData = { ...req.body };
+    const { name, slug, category, shortDescription, description, basePrice, artworkRequirements, isActive, isFeatured } = req.body;
     
-    if (updateData.artworkRequirements && typeof updateData.artworkRequirements === 'string') {
+    const updateData = {};
+    if (name !== undefined) updateData.name = name;
+    if (slug !== undefined) updateData.slug = slug;
+    if (category !== undefined) updateData.category = category;
+    if (shortDescription !== undefined) updateData.shortDescription = shortDescription;
+    if (description !== undefined) updateData.description = description;
+    if (basePrice !== undefined) updateData.basePrice = Number(basePrice);
+    if (isActive !== undefined) updateData.isActive = isActive === 'true' || isActive === true;
+    if (isFeatured !== undefined) updateData.isFeatured = isFeatured === 'true' || isFeatured === true;
+    
+    if (artworkRequirements && typeof artworkRequirements === 'string') {
       try {
         updateData.artworkRequirements = JSON.parse(updateData.artworkRequirements);
       } catch (e) {}
@@ -265,6 +292,9 @@ export const updateProduct = async (req, res, next) => {
 
     const updatedProduct = await Product.findByIdAndUpdate(id, updateData, { new: true });
     
+    // Re-index search asynchronously
+    refreshIndex().catch(err => console.error('Index refresh failed:', err));
+
     return sendSuccess(res, STATUS_CODES.OK, 'Product updated successfully', { product: updatedProduct });
   } catch (error) {
     next(error);
@@ -293,6 +323,9 @@ export const deleteProduct = async (req, res, next) => {
 
     await Product.findByIdAndDelete(id);
     
+    // Re-index search asynchronously
+    refreshIndex().catch(err => console.error('Index refresh failed:', err));
+
     return sendSuccess(res, STATUS_CODES.OK, 'Product deleted successfully', null);
   } catch (error) {
     next(error);
