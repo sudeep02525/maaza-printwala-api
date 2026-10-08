@@ -178,6 +178,23 @@ export const createProduct = async (req, res, next) => {
 
     await newProduct.save();
     
+    // Create a default PricingRule so the product is orderable
+    const defaultPricingRule = new PricingRule({
+      product: newProduct._id,
+      basePrice: newProduct.basePrice,
+      quantityBreaks: [],
+      attributeModifiers: []
+    });
+    await defaultPricingRule.save();
+
+    // Create a default ProductAttributeSchema
+    const defaultSchema = new ProductAttributeSchema({
+      product: newProduct._id,
+      attributes: [],
+      quantityTiers: [100, 250, 500, 1000] // sensible defaults
+    });
+    await defaultSchema.save();
+
     // Re-index search asynchronously
     refreshIndex().catch(err => console.error('Index refresh failed:', err));
 
@@ -264,6 +281,8 @@ export const deleteProduct = async (req, res, next) => {
     }
 
     await Product.findByIdAndDelete(id);
+    await PricingRule.findOneAndDelete({ product: id });
+    await ProductAttributeSchema.findOneAndDelete({ product: id });
     
     // Re-index search asynchronously
     refreshIndex().catch(err => console.error('Index refresh failed:', err));
