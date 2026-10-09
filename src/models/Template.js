@@ -38,6 +38,18 @@ const templateSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    canvasJson: {
+      type: mongoose.Schema.Types.Mixed,
+    },
+    colorVariants: [
+      {
+        name: String,
+        colorCode: String, // hex for the swatch
+        previewFront: String,
+        previewBack: String,
+        canvasJson: mongoose.Schema.Types.Mixed,
+      }
+    ]
   },
   {
     timestamps: true,
