@@ -16,7 +16,7 @@ const seedAdmin = async () => {
     const { ROLES } = (await import('./src/constants/roles.constants.js'));
 
     const adminEmail = 'admin@maazaprintwala.com';
-    const adminPassword = 'AdminPassword123!';
+    const adminPassword = 'MaazaAdmin!Secure2026';
 
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {
