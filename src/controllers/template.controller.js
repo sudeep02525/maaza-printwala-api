@@ -36,10 +36,43 @@ export const getTemplateById = async (req, res, next) => {
 
 export const getAllTemplates = async (req, res, next) => {
   try {
-    const templates = await Template.find({ isActive: true }).populate('product', 'name slug').limit(20);
+    const templates = await Template.find().populate('product', 'name slug');
     return sendSuccess(res, STATUS_CODES.OK, 'All templates fetched successfully', { templates });
   } catch (error) {
     next(error);
   }
 };
 
+export const createTemplate = async (req, res, next) => {
+  try {
+    const template = new Template(req.body);
+    await template.save();
+    return sendSuccess(res, STATUS_CODES.CREATED, 'Template created successfully', { template });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTemplate = async (req, res, next) => {
+  try {
+    const template = await Template.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!template) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Template not found');
+    }
+    return sendSuccess(res, STATUS_CODES.OK, 'Template updated successfully', { template });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteTemplate = async (req, res, next) => {
+  try {
+    const template = await Template.findByIdAndDelete(req.params.id);
+    if (!template) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Template not found');
+    }
+    return sendSuccess(res, STATUS_CODES.OK, 'Template deleted successfully');
+  } catch (error) {
+    next(error);
+  }
+};
