@@ -41,6 +41,9 @@ const templateSchema = new mongoose.Schema(
     canvasJson: {
       type: mongoose.Schema.Types.Mixed,
     },
+    canvasJsonBack: {
+      type: mongoose.Schema.Types.Mixed,
+    },
     colorVariants: [
       {
         name: String,
@@ -48,6 +51,7 @@ const templateSchema = new mongoose.Schema(
         previewFront: String,
         previewBack: String,
         canvasJson: mongoose.Schema.Types.Mixed,
+        canvasJsonBack: mongoose.Schema.Types.Mixed,
       }
     ]
   },

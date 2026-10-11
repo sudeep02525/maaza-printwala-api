@@ -74,13 +74,18 @@ export const validateAndPriceItem = async (productId, configuration, quantity, d
 
   const configObj = configuration ? { ...configuration } : {};
   schema.attributes.forEach((attr) => {
-    if (attr.isRequired && attr.type !== 'numeric-range' && !configObj[attr.key]) {
-      throw { status: 400, message: `Missing required configuration attribute: ${attr.label || attr.key}` };
+    const isReq = attr.isRequired || attr.required;
+    if (isReq && attr.type !== 'numeric-range' && !configObj[attr.key]) {
+      if (attr.options && attr.options.length > 0) {
+        configObj[attr.key] = attr.options[0].value;
+      } else {
+        throw { status: 400, message: `Missing required configuration attribute: ${attr.label || attr.key}` };
+      }
     }
     if (attr.options && attr.options.length > 0 && configObj[attr.key]) {
       const validOpt = attr.options.find((o) => String(o.value) === String(configObj[attr.key]));
       if (!validOpt) {
-        throw { status: 400, message: `Invalid option '${configObj[attr.key]}' for attribute '${attr.label || attr.key}'.` };
+        configObj[attr.key] = attr.options[0].value;
       }
     }
   });
@@ -101,15 +106,15 @@ export const validateAndPriceItem = async (productId, configuration, quantity, d
     configObj.height = h;
   }
 
-  const qty = Number(quantity);
+  let qty = Number(quantity);
   if (isNaN(qty) || qty < 1) {
-    throw { status: 400, message: 'Quantity must be a positive integer.' };
+    qty = schema.quantityTiers?.[0] || 100;
   }
   if (schema.quantityTiers && schema.quantityTiers.length > 0) {
     const isTier = schema.quantityTiers.includes(qty);
     const minTier = Math.min(...schema.quantityTiers);
     if (!isTier && qty < minTier) {
-      throw { status: 400, message: `Quantity ${qty} is below minimum required quantity (${minTier}).` };
+      qty = minTier;
     }
   }
 
@@ -137,7 +142,7 @@ export const validateAndPriceItem = async (productId, configuration, quantity, d
     if (!tmplObj || String(tmplObj.product) !== String(product._id)) {
       throw { status: 400, message: 'Selected template does not exist or does not belong to this product.' };
     }
-    const allowedKeys = (tmplObj.editableFields || []).map((f) => f.label || f.key);
+    const allowedKeys = (tmplObj.editableFields || []).flatMap((f) => [f.key, f.label].filter(Boolean));
     let incomingFields = {};
     if (template.customFields) {
       if (template.customFields instanceof Map || typeof template.customFields.get === 'function') {
@@ -163,8 +168,10 @@ export const validateAndPriceItem = async (productId, configuration, quantity, d
     authTemplate = {
       templateId: tmplObj._id,
       templateName: tmplObj.name,
-      previewUrl: tmplObj.previewUrl,
+      previewUrl: tmplObj.previewUrl || tmplObj.thumbnail || tmplObj.previewFront,
       customFields: cleanFields,
+      variantId: template.variantId || null,
+      activeSide: template.activeSide || 'front',
     };
   } else {
     throw { status: 400, message: "Invalid design type. Must be 'UPLOAD' or 'TEMPLATE'." };

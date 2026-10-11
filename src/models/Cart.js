@@ -50,6 +50,8 @@ const cartItemSchema = new mongoose.Schema(
         type: Map,
         of: String,
       },
+      variantId: { type: String },
+      activeSide: { type: String },
     },
     authoritativeUnitPrice: {
       type: Number,
