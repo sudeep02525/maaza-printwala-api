@@ -12,6 +12,10 @@ import checkoutRoutes from './checkout.routes.js';
 import paymentRoutes from './payment.routes.js';
 import cmsRoutes from './cms.routes.js';
 import searchRoutes from './search.routes.js';
+import couponRoutes from './coupon.routes.js';
+import reviewRoutes from './review.routes.js';
+import notificationRoutes from './notification.routes.js';
+import inquiryRoutes from './inquiry.routes.js';
 
 import rateLimit from 'express-rate-limit';
 
@@ -50,6 +54,10 @@ router.use('/cart', cartRoutes);
 router.use('/checkout', checkoutRoutes);
 router.use('/payments', paymentRoutes);
 router.use('/cms', cmsRoutes);
+router.use('/coupons', couponRoutes);
+router.use('/reviews', reviewRoutes);
+router.use('/notifications', notificationRoutes);
+router.use('/inquiries', inquiryRoutes);
 
 
 router.get('/health', (req, res) => {

@@ -10,5 +10,6 @@ router.use(authenticate, authorize(ROLES.ADMIN));
 router.get('/stats', adminController.getDashboardStats);
 router.get('/orders', adminController.getAllOrdersAdmin);
 router.patch('/orders/:id/status', adminController.updateOrderStatus);
+router.get('/users', adminController.getAllUsersAdmin);
 
 export default router;

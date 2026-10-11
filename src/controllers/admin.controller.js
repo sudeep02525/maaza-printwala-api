@@ -88,3 +88,28 @@ export const updateOrderStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllUsersAdmin = async (req, res, next) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 50;
+    const skip = (page - 1) * limit;
+
+    const users = await User.find()
+      .select('-passwordHash -refreshToken')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit)
+      .lean();
+
+    const total = await User.countDocuments();
+
+    return sendSuccess(res, STATUS_CODES.OK, 'All users fetched successfully', {
+      users,
+      pagination: { page, limit, total, pages: Math.ceil(total / limit) }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

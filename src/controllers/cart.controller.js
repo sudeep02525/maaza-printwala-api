@@ -204,6 +204,38 @@ export const getCart = async (req, res, next) => {
   }
 };
 
+const areItemsIdentical = (itemA, itemB) => {
+  if (String(itemA.product?._id || itemA.product) !== String(itemB.product?._id || itemB.product)) return false;
+  if (itemA.designType !== itemB.designType) return false;
+
+  const toObj = (val) => {
+    if (!val) return {};
+    if (val instanceof Map || typeof val.get === 'function') return Object.fromEntries(val);
+    if (typeof val.toJSON === 'function') return val.toJSON();
+    return val;
+  };
+
+  const configA = JSON.stringify(Object.entries(toObj(itemA.configurationSnapshot)).sort());
+  const configB = JSON.stringify(Object.entries(toObj(itemB.configurationSnapshot)).sort());
+  if (configA !== configB) return false;
+
+  const dimsA = `${itemA.dimensions?.width || ''}-${itemA.dimensions?.height || ''}-${itemA.dimensions?.unit || ''}`;
+  const dimsB = `${itemB.dimensions?.width || ''}-${itemB.dimensions?.height || ''}-${itemB.dimensions?.unit || ''}`;
+  if (dimsA !== dimsB) return false;
+
+  if (itemA.designType === 'UPLOAD') {
+    if ((itemA.artwork?.fileId || '') !== (itemB.artwork?.fileId || '')) return false;
+  } else if (itemA.designType === 'TEMPLATE') {
+    if (String(itemA.template?.templateId || '') !== String(itemB.template?.templateId || '')) return false;
+    if (String(itemA.template?.variantId || '') !== String(itemB.template?.variantId || '')) return false;
+    const fieldsA = JSON.stringify(Object.entries(toObj(itemA.template?.customFields)).sort());
+    const fieldsB = JSON.stringify(Object.entries(toObj(itemB.template?.customFields)).sort());
+    if (fieldsA !== fieldsB) return false;
+  }
+
+  return true;
+};
+
 export const addItemToCart = async (req, res, next) => {
   try {
     const { query, sessionId } = resolveSession(req, res);
@@ -216,7 +248,18 @@ export const addItemToCart = async (req, res, next) => {
     const itemData = await validateAndPriceItem(productId, configuration, quantity, dimensions, designType, artwork, template);
 
     const cart = await getOrCreateCart(query, sessionId);
-    cart.items.push(itemData);
+
+    // Merge identical items with combined quantity
+    const existingIndex = cart.items.findIndex((item) => areItemsIdentical(item, itemData));
+    if (existingIndex !== -1) {
+      const existingItem = cart.items[existingIndex];
+      const combinedQty = Number(existingItem.quantity || 0) + Number(itemData.quantity || 0);
+      const repricedItem = await validateAndPriceItem(productId, configuration, combinedQty, dimensions, designType, artwork, template);
+      cart.items[existingIndex] = repricedItem;
+    } else {
+      cart.items.push(itemData);
+    }
+
     recalculateCartTotal(cart);
     await cart.save();
 
