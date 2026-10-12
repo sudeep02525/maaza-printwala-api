@@ -32,29 +32,37 @@ const seed = async () => {
       process.exit(1);
     }
 
+    const gallerySlots = [
+      '/images/products/cards_angle_view.jpg',
+      '/images/products/cards_texture_closeup.jpg',
+      '/images/products/cards_lifestyle_desk.jpg',
+      '/images/products/cards_boxed_packaging.jpg',
+      '/images/products/cards_gallery_sample.jpg',
+    ];
+
     const cards = [
-      { name: 'Standard Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
+      { name: 'Standard Visiting Cards', image: 'v2_standard_card_1785948339354.png' },
       { name: 'Classic Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Rounded Corner Visiting Cards', image: 'rounded_visiting_card_1785947777870.png' },
+      { name: 'Rounded Corner Visiting Cards', image: 'v2_rounded_card_1785948386413.png' },
       { name: 'Square Visiting Cards', image: 'square_visiting_card_1785947789963.png' },
-      { name: 'Leaf Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
+      { name: 'Leaf Visiting Cards', image: 'rounded_visiting_card_1785947777870.png' },
       { name: 'Oval Visiting Cards', image: 'rounded_visiting_card_1785947777870.png' },
       { name: 'Circle Visiting Cards', image: 'rounded_visiting_card_1785947777870.png' },
-      { name: 'Custom Shape Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Spot UV Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Raised Foil Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Glossy Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Matte Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Bulk Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
+      { name: 'Custom Shape Visiting Cards', image: 'diamond_visiting_card.png' },
+      { name: 'Spot UV Visiting Cards', image: 'v2_spot_uv_card_1785948375368.png' },
+      { name: 'Raised Foil Visiting Cards', image: 'v2_premium_card_1785948535781.png' },
+      { name: 'Glossy Visiting Cards', image: 'v2_glossy_card_1785948351752.png' },
+      { name: 'Matte Visiting Cards', image: 'v2_matte_card_1785948364553.png' },
+      { name: 'Bulk Visiting Cards', image: 'v2_standard_card_1785948339354.png' },
       { name: 'Magnetic Visiting Cards', image: 'magnetic_visiting_card_1785947801266.png' },
       { name: 'Transparent Visiting Cards', image: 'transparent_visiting_card_1785947767352.png' },
-      { name: 'Premium Plus Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Non-Tearable Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Velvet Touch Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
-      { name: 'Pearl Visiting Cards', image: 'standard_visiting_card_1785947757902.png' },
+      { name: 'Premium Plus Visiting Cards', image: 'v2_premium_card_1785948535781.png' },
+      { name: 'Non-Tearable Visiting Cards', image: 'transparent_visiting_card_1785947767352.png' },
+      { name: 'Velvet Touch Visiting Cards', image: 'v2_velvet_card_1785948471723.png' },
+      { name: 'Pearl Visiting Cards', image: 'diamond_visiting_card.png' },
       { name: 'Kraft Visiting Cards', image: 'kraft_visiting_card.png' },
       { name: 'Diamond Visiting Cards', image: 'diamond_visiting_card.png' },
-      { name: 'QR Code Visiting Cards', image: 'standard_visiting_card_1785947757902.png' }
+      { name: 'QR Code Visiting Cards', image: 'v2_qrcode_card_1785948524859.png' }
     ];
 
     const sourceDir = `C:\\Users\\aa\\.gemini\\antigravity-ide\\brain\\f9c640cb-f9fb-4a6b-a287-816d2e8ba13d`;
@@ -84,7 +92,7 @@ const seed = async () => {
         basePrice: card.name.includes('Premium') || card.name.includes('Magnetic') ? 350 : 200,
         isActive: true,
         isFeatured: true,
-        images: [`/images/products/${card.image}`],
+        images: [`/images/products/${card.image}`, ...gallerySlots],
       };
 
       await Product.findOneAndUpdate({ slug: slug }, productObj, { upsert: true, new: true });
