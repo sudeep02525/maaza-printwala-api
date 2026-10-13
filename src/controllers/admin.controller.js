@@ -10,19 +10,120 @@ import { STATUS_CODES } from '../constants/error.constants.js';
 
 export const getDashboardStats = async (req, res, next) => {
   try {
-    const [totalOrders, totalProducts, totalUsers, totalCategories, recentOrders] = await Promise.all([
+    const now = new Date();
+    const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    const sevenDaysAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+    const fourteenDaysAgo = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000);
+    const thirtyDaysAgo = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+
+    const [
+      totalOrders,
+      totalProducts,
+      totalUsers,
+      totalCategories,
+      recentOrders,
+      todayOrders,
+      pendingArtworkReviews,
+      ordersWithRevenue,
+      revenueTodayOrders,
+      revenueMonthOrders,
+      ordersThisWeek,
+      ordersLastWeek,
+      revenueThisWeekOrders,
+      revenueLastWeekOrders,
+      usersThisWeek,
+      usersLastWeek,
+      activeProducts,
+      draftProducts,
+      outOfStockProducts,
+      statusAgg,
+      dailySales,
+    ] = await Promise.all([
       Order.countDocuments(),
       Product.countDocuments(),
       User.countDocuments({ role: 'USER' }),
       Category.countDocuments(),
-      Order.find().sort({ createdAt: -1 }).limit(5).populate('user', 'name email'),
+      Order.find().sort({ createdAt: -1 }).limit(8).populate('user', 'name email'),
+      Order.countDocuments({ createdAt: { $gte: startOfToday } }),
+      Order.countDocuments({ 'items.artworkStatus': 'PENDING_REVIEW' }),
+      Order.find({ paymentStatus: { $in: ['PAID', 'PENDING'] } }),
+      Order.find({ createdAt: { $gte: startOfToday }, paymentStatus: { $in: ['PAID', 'PENDING'] } }),
+      Order.find({ createdAt: { $gte: startOfMonth }, paymentStatus: { $in: ['PAID', 'PENDING'] } }),
+      Order.countDocuments({ createdAt: { $gte: sevenDaysAgo } }),
+      Order.countDocuments({ createdAt: { $gte: fourteenDaysAgo, $lt: sevenDaysAgo } }),
+      Order.find({ createdAt: { $gte: sevenDaysAgo }, paymentStatus: { $in: ['PAID', 'PENDING'] } }),
+      Order.find({ createdAt: { $gte: fourteenDaysAgo, $lt: sevenDaysAgo }, paymentStatus: { $in: ['PAID', 'PENDING'] } }),
+      User.countDocuments({ role: 'USER', createdAt: { $gte: sevenDaysAgo } }),
+      User.countDocuments({ role: 'USER', createdAt: { $gte: fourteenDaysAgo, $lt: sevenDaysAgo } }),
+      Product.countDocuments({
+        $or: [
+          { status: 'ACTIVE' },
+          { status: { $exists: false }, isActive: true },
+          { status: null, isActive: true },
+        ],
+      }),
+      Product.countDocuments({
+        $or: [
+          { status: 'DRAFT' },
+          { status: { $exists: false }, isActive: false },
+          { status: null, isActive: false },
+        ],
+      }),
+      Product.countDocuments({ status: 'OUT_OF_STOCK' }),
+      Order.aggregate([{ $group: { _id: '$fulfilmentStatus', count: { $sum: 1 } } }]),
+      Order.aggregate([
+        { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+        {
+          $group: {
+            _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+            orders: { $sum: 1 },
+            revenue: { $sum: '$finalPayableAmount' },
+          },
+        },
+        { $sort: { _id: 1 } },
+      ]),
     ]);
 
-    // Calculate total order revenue
-    const orders = await Order.find({ paymentStatus: { $in: ['PAID', 'PENDING'] } });
-    const totalRevenue = orders.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
+    const totalRevenue = ordersWithRevenue.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
+    const revenueToday = revenueTodayOrders.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
+    const revenueThisMonth = revenueMonthOrders.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
+    const revenueThisWeek = revenueThisWeekOrders.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
+    const revenueLastWeek = revenueLastWeekOrders.reduce((acc, order) => acc + (order.finalPayableAmount || 0), 0);
 
-    const pendingArtworkReviews = await Order.countDocuments({ 'items.artworkStatus': 'PENDING_REVIEW' });
+    const calcGrowth = (curr, prev) => {
+      if (prev === 0) return curr > 0 ? 100 : 0;
+      return Number((((curr - prev) / prev) * 100).toFixed(1));
+    };
+
+    const statusBreakdown = {
+      NEW: 0,
+      ARTWORK_REVIEW: 0,
+      PRODUCTION: 0,
+      DISPATCH_READY: 0,
+      DELIVERED: 0,
+      CANCELLED: 0,
+    };
+
+    statusAgg.forEach((item) => {
+      const s = item._id || '';
+      if (!s) return;
+      statusBreakdown[s] = (statusBreakdown[s] || 0) + item.count;
+
+      if (s === 'ORDER_RECEIVED' || s === 'NEW') {
+        statusBreakdown.NEW = (statusBreakdown.NEW || 0) + item.count;
+      } else if (s === 'ARTWORK_REVIEW' || s === 'ARTWORK_CHANGES_REQUIRED' || s === 'ARTWORK_APPROVED') {
+        statusBreakdown.ARTWORK_REVIEW = (statusBreakdown.ARTWORK_REVIEW || 0) + item.count;
+      } else if (s === 'PRINTING' || s === 'QUEUED_FOR_PRINTING' || s === 'PRODUCTION' || s === 'QUALITY_CHECK') {
+        statusBreakdown.PRODUCTION = (statusBreakdown.PRODUCTION || 0) + item.count;
+      } else if (s === 'READY_FOR_DISPATCH' || s === 'DISPATCHED' || s === 'DISPATCH_READY') {
+        statusBreakdown.DISPATCH_READY = (statusBreakdown.DISPATCH_READY || 0) + item.count;
+      } else if (s === 'DELIVERED') {
+        statusBreakdown.DELIVERED = (statusBreakdown.DELIVERED || 0) + item.count;
+      } else if (s === 'CANCELLED') {
+        statusBreakdown.CANCELLED = (statusBreakdown.CANCELLED || 0) + item.count;
+      }
+    });
 
     return sendSuccess(res, STATUS_CODES.OK, 'Admin stats fetched successfully', {
       stats: {
@@ -32,7 +133,28 @@ export const getDashboardStats = async (req, res, next) => {
         totalCategories,
         totalRevenue,
         pendingArtworkReviews,
+        todayOrders,
+        statusBreakdown,
+        revenueToday,
+        revenueThisMonth,
+        growth: {
+          orders: calcGrowth(ordersThisWeek, ordersLastWeek),
+          revenue: calcGrowth(revenueThisWeek, revenueLastWeek),
+          customers: calcGrowth(usersThisWeek, usersLastWeek),
+          ordersThisWeek,
+          ordersLastWeek,
+          revenueThisWeek,
+          revenueLastWeek,
+          usersThisWeek,
+          usersLastWeek,
+        },
+        productStatus: {
+          active: activeProducts,
+          outOfStock: outOfStockProducts,
+          draft: draftProducts,
+        },
       },
+      dailySales,
       recentOrders,
     });
   } catch (error) {
