@@ -14,7 +14,9 @@ import { authenticate } from './src/middleware/auth.middleware.js';
 
 const app = express();
 
-const allow = (process.env.CORS_ORIGINS || 'http://localhost:3000').split(',');
+const allow = (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001')
+  .split(',')
+  .map((s) => s.trim());
 app.use(
   cors({
     origin: (o, cb) => cb(null, !o || allow.includes(o)),

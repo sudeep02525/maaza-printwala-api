@@ -32,14 +32,10 @@ const seedDatabase = async () => {
     console.log('Cleared existing database tables.');
 
     // 1. Seed Users (Production Admin & Customer Account)
-    const salt = await bcrypt.genSalt(10);
-    const adminPassword = await bcrypt.hash('admin123', salt);
-    const userPassword = await bcrypt.hash('user123', salt);
-
     const adminUser = await User.create({
       name: 'Maaza Admin',
       email: 'admin@maazaprintwala.com',
-      password: adminPassword,
+      password: 'admin123',
       role: ROLES.ADMIN,
       phone: '+919876543210',
     });
@@ -47,7 +43,7 @@ const seedDatabase = async () => {
     const demoUser = await User.create({
       name: 'Raj Mehta',
       email: 'user@maazaprintwala.com',
-      password: userPassword,
+      password: 'user123',
       role: ROLES.USER,
       phone: '+919123456780',
     });

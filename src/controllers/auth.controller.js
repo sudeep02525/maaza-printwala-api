@@ -8,6 +8,14 @@ import { mergeCartOnLogin } from './cart.controller.js';
 import { STATUS_CODES, ERROR_MESSAGES } from '../constants/error.constants.js';
 
 
+const getCookieNames = (req) => {
+  const isAdmin = req.headers['x-client'] === 'admin';
+  return {
+    access: isAdmin ? 'adminAccessToken' : 'accessToken',
+    refresh: isAdmin ? 'adminRefreshToken' : 'refreshToken',
+  };
+};
+
 export const register = async (req, res, next) => {
   try {
     const { name, email, password, phone } = req.body;
@@ -28,14 +36,16 @@ export const register = async (req, res, next) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie('accessToken', accessToken, {
+    const { access: accessCookieName, refresh: refreshCookieName } = getCookieNames(req);
+
+    res.cookie(accessCookieName, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie(refreshCookieName, refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
@@ -75,14 +85,16 @@ export const login = async (req, res, next) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie('accessToken', accessToken, {
+    const { access: accessCookieName, refresh: refreshCookieName } = getCookieNames(req);
+
+    res.cookie(accessCookieName, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
-    res.cookie('refreshToken', refreshToken, {
+    res.cookie(refreshCookieName, refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
@@ -110,6 +122,9 @@ export const logout = async (req, res, next) => {
       await req.user.save();
     }
 
+    const { access: accessCookieName, refresh: refreshCookieName } = getCookieNames(req);
+    res.clearCookie(accessCookieName);
+    res.clearCookie(refreshCookieName);
     res.clearCookie('accessToken');
     res.clearCookie('refreshToken');
 
@@ -131,7 +146,8 @@ export const getProfile = async (req, res, next) => {
 
 export const refresh = async (req, res, next) => {
   try {
-    const refreshToken = req.cookies?.refreshToken;
+    const { access: accessCookieName, refresh: refreshCookieName } = getCookieNames(req);
+    const refreshToken = req.cookies?.[refreshCookieName] || req.cookies?.refreshToken;
     if (!refreshToken) {
       return sendError(res, STATUS_CODES.UNAUTHORIZED, 'No refresh token provided');
     }
@@ -152,14 +168,14 @@ export const refresh = async (req, res, next) => {
     user.refreshToken = newRefreshToken;
     await user.save();
 
-    res.cookie('accessToken', accessToken, {
+    res.cookie(accessCookieName, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       maxAge: 15 * 60 * 1000,
     });
 
-    res.cookie('refreshToken', newRefreshToken, {
+    res.cookie(refreshCookieName, newRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',

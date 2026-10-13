@@ -5,7 +5,10 @@ import User from '../models/User.js';
 
 export const authenticate = async (req, res, next) => {
   try {
-    let token = req.cookies?.accessToken;
+    const isAdmin = req.headers['x-client'] === 'admin';
+    let token = isAdmin
+      ? (req.cookies?.adminAccessToken || req.cookies?.accessToken)
+      : (req.cookies?.accessToken || req.cookies?.adminAccessToken);
 
     if (!token && req.headers.authorization?.startsWith('Bearer ')) {
       token = req.headers.authorization.split(' ')[1];
@@ -34,7 +37,11 @@ export const authenticate = async (req, res, next) => {
 
 export const optionalAuth = async (req, res, next) => {
   try {
-    let token = req.cookies?.accessToken;
+    const isAdmin = req.headers['x-client'] === 'admin';
+    let token = isAdmin
+      ? (req.cookies?.adminAccessToken || req.cookies?.accessToken)
+      : (req.cookies?.accessToken || req.cookies?.adminAccessToken);
+
     if (!token && req.headers.authorization?.startsWith('Bearer ')) {
       token = req.headers.authorization.split(' ')[1];
     }
