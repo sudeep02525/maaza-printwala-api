@@ -4,6 +4,7 @@ import PaymentAttempt from '../models/PaymentAttempt.js';
 import CheckoutDraft from '../models/CheckoutDraft.js';
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
+import Notification from '../models/Notification.js';
 import { generateOrderNumber } from './orderNumber.service.js';
 import { PAYMENT_STATUS, FULFILMENT_STATUS } from '../constants/order.constants.js';
 
@@ -180,6 +181,20 @@ export const finalizeOrder = async (attemptId, verificationMetadata = {}) => {
       await session.commitTransaction();
       session.endSession();
     }
+
+    // Trigger asynchronous notification (Email / In-App)
+    Notification.create({
+      user: createdOrder.user,
+      recipient: createdOrder.deliveryAddress?.phone || createdOrder.orderNumber,
+      channel: 'EMAIL',
+      subject: `Order Confirmation #${createdOrder.orderNumber}`,
+      message: `Your order #${createdOrder.orderNumber} has been received and confirmed. Total: ₹${createdOrder.finalPayableAmount}.`,
+      status: 'SENT',
+      metadata: {
+        orderId: String(createdOrder._id),
+        orderNumber: String(createdOrder.orderNumber),
+      },
+    }).catch((err) => console.error('Order creation notification error:', err));
 
     return {
       success: true,
