@@ -66,10 +66,25 @@ export const validateAndPriceItem = async (productId, configuration, quantity, d
     throw { status: 400, message: 'Selected product is unavailable or inactive.' };
   }
 
-  const schema = await ProductAttributeSchema.findOne({ product: product._id });
-  const pricingRule = await PricingRule.findOne({ product: product._id });
-  if (!schema || !pricingRule) {
-    throw { status: 400, message: 'Configuration schema or pricing rules missing for this product.' };
+  let schema = await ProductAttributeSchema.findOne({ product: product._id });
+  let pricingRule = await PricingRule.findOne({ product: product._id });
+  
+  if (!schema) {
+    schema = {
+      product: product._id,
+      attributes: [],
+      quantityTiers: [100, 250, 500, 1000, 2500],
+    };
+  }
+
+  if (!pricingRule) {
+    pricingRule = {
+      product: product._id,
+      basePrice: product.basePrice || 200,
+      quantityBreaks: [],
+      attributeModifiers: [],
+      isDemoData: true,
+    };
   }
 
   const configObj = configuration ? { ...configuration } : {};

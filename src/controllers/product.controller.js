@@ -125,13 +125,23 @@ export const calculatePrice = async (req, res, next) => {
       productId = p._id;
     }
 
-    const [pricingRule, attributeSchema] = await Promise.all([
+    let [pricingRule, attributeSchema] = await Promise.all([
       PricingRule.findOne({ product: productId }),
       ProductAttributeSchema.findOne({ product: productId }),
     ]);
 
     if (!pricingRule) {
-      return sendError(res, STATUS_CODES.NOT_FOUND, 'Pricing rule not found for this product');
+      const prod = await Product.findById(productId);
+      if (!prod) {
+        return sendError(res, STATUS_CODES.NOT_FOUND, 'Product not found');
+      }
+      pricingRule = {
+        product: prod._id,
+        basePrice: prod.basePrice || 200,
+        quantityBreaks: [],
+        attributeModifiers: [],
+        isDemoData: true,
+      };
     }
 
     const priceResult = calculateProductPrice(pricingRule, attributeSchema, configuration || {}, Number(quantity) || 100);
