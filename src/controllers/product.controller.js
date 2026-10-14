@@ -42,9 +42,28 @@ const interleaveByCategory = (items) => {
   return result;
 };
 
+// Helper: Attach attribute schemas and clean attributeMap to products
+const attachAttributesToProducts = async (products) => {
+  if (!products || products.length === 0) return products;
+  const productIds = products.map((p) => p._id);
+  const schemas = await ProductAttributeSchema.find({ product: { $in: productIds } }).lean();
+  const schemaMap = {};
+  for (const s of schemas) {
+    schemaMap[s.product.toString()] = s.attributes || [];
+  }
+  for (const p of products) {
+    p.attributes = schemaMap[p._id.toString()] || [];
+    p.attributeMap = {};
+    for (const attr of p.attributes) {
+      p.attributeMap[attr.key] = (attr.options || []).map((o) => o.label || o.value);
+    }
+  }
+  return products;
+};
+
 export const getAllProducts = async (req, res, next) => {
   try {
-    const { category, search, featured, sort } = req.query;
+    const { category, search, featured, sort, minPrice, maxPrice, finish, material } = req.query;
     let categoryId = null;
 
     if (category) {
@@ -71,7 +90,14 @@ export const getAllProducts = async (req, res, next) => {
        if (featured === 'true') {
           products = products.filter(p => p.isFeatured);
        }
+       if (minPrice) {
+          products = products.filter(p => Number(p.basePrice) >= Number(minPrice));
+       }
+       if (maxPrice) {
+          products = products.filter(p => Number(p.basePrice) <= Number(maxPrice));
+       }
        
+       await attachAttributesToProducts(products);
        return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { products });
     }
 
@@ -79,9 +105,14 @@ export const getAllProducts = async (req, res, next) => {
     const query = { isActive: true };
     if (categoryId) query.category = categoryId;
     if (featured === 'true') query.isFeatured = true;
+    if (minPrice || maxPrice) {
+      query.basePrice = {};
+      if (minPrice) query.basePrice.$gte = Number(minPrice);
+      if (maxPrice) query.basePrice.$lte = Number(maxPrice);
+    }
 
     const page = parseInt(req.query.page, 10) || 1;
-    const limit = parseInt(req.query.limit, 10) || 50;
+    const limit = parseInt(req.query.limit, 10) || 100;
     const skip = (page - 1) * limit;
 
     let sortObj = { isFeatured: -1, createdAt: -1 };
@@ -116,6 +147,8 @@ export const getAllProducts = async (req, res, next) => {
 
       total = await Product.countDocuments(query);
     }
+
+    await attachAttributesToProducts(products);
 
     return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { 
       products,
