@@ -5,88 +5,109 @@ mongoose.connect(process.env.MONGO_URI).then(async () => {
   const Product = require('./src/models/Product.js').default || require('./src/models/Product.js');
   const Category = require('./src/models/Category.js').default || require('./src/models/Category.js');
 
-  const paperCategory = await Category.findOne({ slug: 'stationery' }) || await Category.findOne({});
-  const clothingCategory = await Category.findOne({ slug: 'custom-apparel' }) || await Category.findOne({});
-  const subCategory = await Category.findOne({ slug: 'corporate-gifts' }) || await Category.findOne({});
-  const promoCategory = await Category.findOne({ slug: 'promotional-items' }) || await Category.findOne({});
+  const stationery = await Category.findOne({ slug: 'stationery' });
+  const apparel = await Category.findOne({ slug: 'custom-apparel' });
+  const gifts = await Category.findOne({ slug: 'corporate-gifts' });
+  const packaging = await Category.findOne({ slug: 'packaging' });
+  const flyers = await Category.findOne({ slug: 'flyers-brochures' });
+  const stickers = await Category.findOne({ slug: 'labels-stickers' });
+
+  // Fix PVC ID cards category to stationery
+  if (stationery) {
+    await Product.updateOne({ slug: 'pvc-id-cards' }, { $set: { category: stationery._id } });
+    console.log('Fixed pvc-id-cards category -> stationery');
+  }
 
   const products = [
     {
       name: 'Custom Printed Cotton T-Shirt',
       slug: 'custom-cotton-tshirt',
-      category: clothingCategory._id,
-      description: '100% Cotton custom printed t-shirts.',
+      category: apparel ? apparel._id : null,
+      description: '100% Cotton custom printed t-shirts with durable, vibrant prints.',
       basePrice: 399,
       isActive: true,
       isFeatured: true,
-      images: ['/images/cotton_tshirt.png']
+      images: ['/images/cotton_tshirt.png', '/images/cat_tshirt_new_1785478181285.png']
     },
     {
-      name: 'Personalized Coffee Mug',
+      name: 'Embroidered Polo Shirt',
+      slug: 'embroidered-polo-shirt',
+      category: apparel ? apparel._id : null,
+      description: 'Premium polo shirts with custom embroidered logo on chest.',
+      basePrice: 599,
+      isActive: true,
+      isFeatured: true,
+      images: ['/images/polo_shirt.png', '/images/cat_polo_new_1785478171451.png']
+    },
+    {
+      name: 'Personalized Ceramic Coffee Mug',
       slug: 'personalized-coffee-mug',
-      category: subCategory._id,
-      description: 'Ceramic personalized coffee mug.',
+      category: gifts ? gifts._id : null,
+      description: 'High-gloss ceramic mug personalized with high-definition wrap print.',
       basePrice: 249,
       isActive: true,
       isFeatured: true,
-      images: ['/images/coffee_mug.png']
+      images: ['/images/cat_mugs_new_1785478141544.png', '/images/coffee_mug.png']
     },
     {
       name: 'Corporate Welcome Kit',
       slug: 'corporate-welcome-kit',
-      category: promoCategory._id,
-      description: 'Welcome kit with diary, pen, and bottle.',
+      category: gifts ? gifts._id : null,
+      description: 'Complete new hire welcome kit with engraved bottle, premium diary, and pen.',
       basePrice: 1499,
       isActive: true,
       isFeatured: true,
       images: ['/images/corporate_welcome_kit.png']
     },
     {
-      name: 'Custom Corrugated Boxes',
+      name: 'Eco-Friendly Corrugated Boxes',
       slug: 'custom-corrugated-boxes',
-      category: paperCategory._id,
-      description: 'Sturdy packaging boxes for e-commerce.',
+      category: packaging ? packaging._id : null,
+      description: 'Durable, eco-friendly custom printed packaging boxes.',
       basePrice: 49,
       isActive: true,
       isFeatured: true,
-      images: ['/images/corrugated_boxes.png']
+      images: ['/images/cat_packaging_1785433687115.png', '/images/corrugated_boxes.png']
     },
     {
-      name: 'Embroidered Polo Shirt',
-      slug: 'embroidered-polo-shirt',
-      category: clothingCategory._id,
-      description: 'Premium polo shirts with custom embroidery.',
-      basePrice: 599,
-      isActive: true,
-      isFeatured: true,
-      images: ['/images/polo_shirt.png']
-    },
-    {
-      name: 'Executive Letterhead',
+      name: 'Executive Corporate Letterhead',
       slug: 'executive-letterhead',
-      category: paperCategory._id,
-      description: 'Professional letterheads for executive communication.',
+      category: stationery ? stationery._id : null,
+      description: 'Premium 100gsm bond paper letterheads for official corporate correspondence.',
       basePrice: 99,
       isActive: true,
       isFeatured: true,
       images: ['/images/executive_letterhead.png']
     },
     {
-      name: 'Outdoor Vinyl Banner',
-      slug: 'outdoor-vinyl-banner',
-      category: paperCategory._id,
-      description: 'Durable vinyl banners for outdoor advertising.',
-      basePrice: 899,
+      name: 'Promotional Marketing Flyers (A5)',
+      slug: 'promotional-marketing-flyers',
+      category: flyers ? flyers._id : null,
+      description: 'Gloss or matte finished double-sided promotional flyers.',
+      basePrice: 199,
       isActive: true,
       isFeatured: true,
-      images: ['/images/outdoor_banner.png']
+      images: ['/images/cat_flyers_brochures_1785433655247.png']
+    },
+    {
+      name: 'Custom Die-Cut Sheet Stickers',
+      slug: 'custom-die-cut-stickers',
+      category: stickers ? stickers._id : null,
+      description: 'Waterproof vinyl die-cut stickers for branding and packaging.',
+      basePrice: 149,
+      isActive: true,
+      isFeatured: true,
+      images: ['/images/cat_stickers_labels_1785433676109.png']
     }
   ];
 
   for (const p of products) {
-    await Product.findOneAndUpdate({ slug: p.slug }, p, { upsert: true });
-    console.log('Restored: ' + p.slug);
+    if (p.category) {
+      await Product.findOneAndUpdate({ slug: p.slug }, { $set: p }, { upsert: true });
+      console.log('Restored: ' + p.name + ' (' + p.slug + ')');
+    }
   }
 
+  console.log('Catalogue successfully enriched across all categories!');
   process.exit(0);
 });

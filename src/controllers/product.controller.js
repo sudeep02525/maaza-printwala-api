@@ -16,9 +16,35 @@ const __dirname = path.dirname(__filename);
 
 
 
+// Helper: Interleave products evenly by category to prevent any single category dominating the catalogue
+const interleaveByCategory = (items) => {
+  if (!items || items.length <= 1) return items;
+  const groups = {};
+  for (const item of items) {
+    const key = item.category?.slug || item.category?._id?.toString() || item.categoryName || 'other';
+    if (!groups[key]) groups[key] = [];
+    groups[key].push(item);
+  }
+  const keys = Object.keys(groups);
+  const result = [];
+  let index = 0;
+  let hasMore = true;
+  while (hasMore) {
+    hasMore = false;
+    for (const k of keys) {
+      if (index < groups[k].length) {
+        result.push(groups[k][index]);
+        hasMore = true;
+      }
+    }
+    index++;
+  }
+  return result;
+};
+
 export const getAllProducts = async (req, res, next) => {
   try {
-    const { category, search, featured } = req.query;
+    const { category, search, featured, sort } = req.query;
     let categoryId = null;
 
     if (category) {
@@ -58,14 +84,38 @@ export const getAllProducts = async (req, res, next) => {
     const limit = parseInt(req.query.limit, 10) || 50;
     const skip = (page - 1) * limit;
 
-    const products = await Product.find(query)
-      .populate('category', 'name slug')
-      .sort({ updatedAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .lean();
-      
-    const total = await Product.countDocuments(query);
+    let sortObj = { isFeatured: -1, createdAt: -1 };
+    if (sort === 'price_asc') sortObj = { basePrice: 1 };
+    else if (sort === 'price_desc') sortObj = { basePrice: -1 };
+    else if (sort === 'name_asc') sortObj = { name: 1 };
+    else if (sort === 'name_desc') sortObj = { name: -1 };
+    else if (sort === 'rating') sortObj = { averageRating: -1, reviewCount: -1 };
+    else if (sort === 'newest') sortObj = { createdAt: -1 };
+
+    let products;
+    let total;
+
+    // When viewing "All Products" without a specific category or custom sort,
+    // interleave products by category so all categories (T-Shirts, Banners, Cards, Mugs, etc.) are showcased evenly
+    if (!categoryId && (!sort || sort === 'popular' || sort === 'default')) {
+      const allActive = await Product.find(query)
+        .populate('category', 'name slug')
+        .sort({ isFeatured: -1, createdAt: -1 })
+        .lean();
+
+      total = allActive.length;
+      const interleaved = interleaveByCategory(allActive);
+      products = interleaved.slice(skip, skip + limit);
+    } else {
+      products = await Product.find(query)
+        .populate('category', 'name slug')
+        .sort(sortObj)
+        .skip(skip)
+        .limit(limit)
+        .lean();
+
+      total = await Product.countDocuments(query);
+    }
 
     return sendSuccess(res, STATUS_CODES.OK, 'Products fetched successfully', { 
       products,
