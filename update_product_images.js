@@ -19,20 +19,35 @@ const cardSlots2to6 = [
 const heroMap = {
   'standard-card': '/images/products/v2_standard_card_1785948339354.png',
   'visiting-cards': '/images/products/v2_standard_card_1785948339354.png',
+  'standard-visiting-cards': '/images/products/v2_standard_card_1785948339354.png',
   'classic-visiting-cards': '/images/products/standard_visiting_card_1785947757902.png',
   'glossy-card': '/images/products/v2_glossy_card_1785948351752.png',
+  'glossy-visiting-cards': '/images/products/v2_glossy_card_1785948351752.png',
   'matte-card': '/images/products/v2_matte_card_1785948364553.png',
+  'matte-visiting-cards': '/images/products/v2_matte_card_1785948364553.png',
   'spot-uv-card': '/images/products/v2_spot_uv_card_1785948375368.png',
+  'spot-uv-visiting-cards': '/images/products/v2_spot_uv_card_1785948375368.png',
   'rounded-card': '/images/products/v2_rounded_card_1785948386413.png',
+  'rounded-visiting-cards': '/images/products/v2_rounded_card_1785948386413.png',
+  'rounded-corner-visiting-cards': '/images/products/v2_rounded_card_1785948386413.png',
   'velvet-card': '/images/products/v2_velvet_card_1785948471723.png',
-  'qrcode-card': '/images/products/v2_qrcode_card_1785948524859.png',
+  'velvet-touch-visiting-cards': '/images/products/v2_velvet_card_1785948471723.png',
+  'qrcode-card': '/images/products/hero_qr_code_card.jpg',
+  'qr-code-visiting-cards': '/images/products/hero_qr_code_card.jpg',
+  'pearl-visiting-cards': '/images/products/hero_pearl_card.jpg',
   'premium-card': '/images/products/v2_premium_card_1785948535781.png',
+  'premium-plus-visiting-cards': '/images/products/v2_premium_card_1785948535781.png',
   'transparent-visiting-card': '/images/products/transparent_visiting_card_1785947767352.png',
+  'transparent-visiting-cards': '/images/products/transparent_visiting_card_1785947767352.png',
   'square-visiting-card': '/images/products/square_visiting_card_1785947789963.png',
+  'square-visiting-cards': '/images/products/square_visiting_card_1785947789963.png',
   'rounded-visiting-card': '/images/products/rounded_visiting_card_1785947777870.png',
   'magnetic-visiting-card': '/images/products/magnetic_visiting_card_1785947801266.png',
-  'kraft-visiting-card': '/images/products/kraft_visiting_card.png',
+  'magnetic-visiting-cards': '/images/products/magnetic_visiting_card_1785947801266.png',
+  'kraft-visiting-card': '/images/products/hero_kraft_card.jpg',
+  'kraft-visiting-cards': '/images/products/hero_kraft_card.jpg',
   'diamond-visiting-card': '/images/products/diamond_visiting_card.png',
+  'diamond-visiting-cards': '/images/products/diamond_visiting_card.png',
 };
 
 async function run() {
@@ -56,14 +71,13 @@ async function run() {
         newImages = [existingHero, ...cardSlots2to6];
       } else if (slug === 'roll-up-standee') {
         newImages = [
-          'https://images.unsplash.com/photo-1542744094-3a3e2203538c?auto=format&fit=crop&w=600&q=80',
           '/images/products/standee_lifestyle_event.jpg',
           '/images/products/flex_banner_outdoor.jpg',
-          'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&w=600&q=80'
+          '/images/products/cards_boxed_packaging.jpg'
         ];
       } else if (slug === 'corporate-letterheads') {
         newImages = [
-          'https://images.unsplash.com/photo-1586075010923-2dd4570fb338?auto=format&fit=crop&w=600&q=80',
+          '/images/executive_letterhead.png',
           '/images/products/letterhead_angle_pack.jpg',
           '/images/products/cards_texture_closeup.jpg',
           '/images/products/cards_lifestyle_desk.jpg'
@@ -77,14 +91,14 @@ async function run() {
         ];
       } else if (slug === 't-shirts') {
         newImages = [
-          'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=600&q=80',
+          '/images/cotton_tshirt.png',
           '/images/products/tshirt_lifestyle.jpg',
-          'https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=600&q=80',
+          '/images/cat_tshirt_new_1785478181285.png',
           '/images/products/cards_boxed_packaging.jpg'
         ];
       } else if (slug === 'flex-banners') {
         newImages = [
-          'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=600&q=80',
+          '/images/outdoor_banner.png',
           '/images/products/flex_banner_outdoor.jpg',
           '/images/products/standee_lifestyle_event.jpg'
         ];
