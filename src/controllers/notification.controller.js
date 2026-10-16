@@ -7,8 +7,14 @@ export const getMyNotifications = async (req, res, next) => {
     const userId = req.user?._id;
     const userEmail = req.user?.email;
 
+    const conditions = [{ user: userId }];
+    if (userEmail) conditions.push({ recipient: userEmail });
+    if (req.user?.role === 'ADMIN') {
+      conditions.push({ recipient: 'ADMIN' });
+    }
+
     const notifications = await Notification.find({
-      $or: [{ user: userId }, { recipient: userEmail }],
+      $or: conditions,
     })
       .sort({ createdAt: -1 })
       .limit(30)

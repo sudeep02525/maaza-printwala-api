@@ -7,6 +7,7 @@ import Cart from '../models/Cart.js';
 import Notification from '../models/Notification.js';
 import { generateOrderNumber } from './orderNumber.service.js';
 import { PAYMENT_STATUS, FULFILMENT_STATUS } from '../constants/order.constants.js';
+import { emitToAdmins } from '../socket.js';
 
 /**
  * Detects if the MongoDB deployment supports multi-document ACID transactions
@@ -195,6 +196,27 @@ export const finalizeOrder = async (attemptId, verificationMetadata = {}) => {
         orderNumber: String(createdOrder.orderNumber),
       },
     }).catch((err) => console.error('Order creation notification error:', err));
+
+    // Notify ADMIN — in-app record + live socket event
+    Notification.create({
+      recipient: 'ADMIN',
+      channel: 'IN_APP',
+      subject: `New order #${createdOrder.orderNumber}`,
+      message: `New order #${createdOrder.orderNumber} — Rs.${createdOrder.finalPayableAmount}`,
+      status: 'SENT',
+      metadata: {
+        orderId: String(createdOrder._id),
+        orderNumber: String(createdOrder.orderNumber),
+      },
+    }).catch((err) => console.error('Admin notification error:', err));
+
+    emitToAdmins('new-order', {
+      _id: String(createdOrder._id),
+      orderNumber: createdOrder.orderNumber,
+      amount: createdOrder.finalPayableAmount,
+      customer: createdOrder.deliveryAddress?.fullName || createdOrder.deliveryAddress?.phone || 'Customer',
+      createdAt: createdOrder.createdAt,
+    });
 
     return {
       success: true,
