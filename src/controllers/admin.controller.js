@@ -5,6 +5,7 @@ import Category from '../models/Category.js';
 import DeliveryRule from '../models/DeliveryRule.js';
 import SearchLog from '../models/SearchLog.js';
 import Notification from '../models/Notification.js';
+import Settings from '../models/Settings.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 
@@ -388,5 +389,42 @@ export const getReportsAdmin = async (req, res, next) => {
     next(error);
   }
 };
+
+/**
+ * Settings Management (Store Policies, Brand, Logistics, and Tax)
+ */
+export const getSettingsAdmin = async (req, res, next) => {
+  try {
+    let s = await Settings.findOne({ key: 'store' });
+    if (!s) s = await Settings.create({ key: 'store' });
+    return sendSuccess(res, STATUS_CODES.OK, 'Settings fetched', { settings: s });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const updateSettingsAdmin = async (req, res, next) => {
+  try {
+    const s = await Settings.findOneAndUpdate(
+      { key: 'store' },
+      { $set: req.body },
+      { new: true, upsert: true }
+    );
+    return sendSuccess(res, STATUS_CODES.OK, 'Settings saved', { settings: s });
+  } catch (e) {
+    next(e);
+  }
+};
+
+export const getPublicSettings = async (req, res, next) => {
+  try {
+    let s = await Settings.findOne({ key: 'store' }).lean();
+    if (!s) s = await Settings.create({ key: 'store' });
+    return sendSuccess(res, STATUS_CODES.OK, 'Store settings fetched', { settings: s });
+  } catch (e) {
+    next(e);
+  }
+};
+
 
 

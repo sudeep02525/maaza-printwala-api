@@ -1,6 +1,7 @@
 import CheckoutDraft from '../models/CheckoutDraft.js';
 import Cart from '../models/Cart.js';
 import DeliveryRule from '../models/DeliveryRule.js';
+import Settings from '../models/Settings.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 import { resolveSession, validateAndPriceItem, recalculateCartTotal } from './cart.controller.js';
@@ -399,7 +400,11 @@ export const selectDeliveryRule = async (req, res, next) => {
 
     // Server-Authoritative Charge Calculation
     let charge = rule.charge || 0;
-    if (rule.freeDeliveryThreshold && draft.authoritativeSubtotal >= rule.freeDeliveryThreshold) {
+    const storeSettings = await Settings.findOne({ key: 'store' }).lean();
+    const effectiveFreeThreshold = (rule.freeDeliveryThreshold !== undefined && rule.freeDeliveryThreshold !== null)
+      ? rule.freeDeliveryThreshold
+      : storeSettings?.freeShippingThreshold;
+    if (effectiveFreeThreshold && draft.authoritativeSubtotal >= effectiveFreeThreshold) {
       charge = 0;
     }
 

@@ -16,6 +16,7 @@ import couponRoutes from './coupon.routes.js';
 import reviewRoutes from './review.routes.js';
 import notificationRoutes from './notification.routes.js';
 import inquiryRoutes from './inquiry.routes.js';
+import settingsRoutes from './settings.routes.js';
 
 import rateLimit from 'express-rate-limit';
 
@@ -58,6 +59,7 @@ router.use('/coupons', couponRoutes);
 router.use('/reviews', reviewRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/inquiries', inquiryRoutes);
+router.use('/settings', settingsRoutes);
 
 
 router.get('/health', (req, res) => {

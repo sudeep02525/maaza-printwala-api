@@ -21,4 +21,8 @@ router.post('/delivery-rules', adminController.createDeliveryRuleAdmin);
 router.put('/delivery-rules/:id', adminController.updateDeliveryRuleAdmin);
 router.delete('/delivery-rules/:id', adminController.deleteDeliveryRuleAdmin);
 
+// Store Settings Management
+router.get('/settings', adminController.getSettingsAdmin);
+router.put('/settings', adminController.updateSettingsAdmin);
+
 export default router;
