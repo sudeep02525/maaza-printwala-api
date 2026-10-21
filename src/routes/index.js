@@ -25,19 +25,22 @@ const router = express.Router();
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
   max: 1000,
-  message: { success: false, message: 'Too many requests, please try again later.' }
+  message: { success: false, message: 'Too many requests, please try again later.' },
+  validate: { xForwardedForHeader: false }
 });
 
 const authLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 200,
-  message: { success: false, message: 'Too many authentication attempts, please try again later.' }
+  message: { success: false, message: 'Too many authentication attempts, please try again later.' },
+  validate: { xForwardedForHeader: false }
 });
 
 const uploadLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 50,
-  message: { success: false, message: 'Too many uploads, please try again later.' }
+  message: { success: false, message: 'Too many uploads, please try again later.' },
+  validate: { xForwardedForHeader: false }
 });
 
 router.use(globalLimiter);
