@@ -75,6 +75,8 @@ export const finalizeOrder = async (attemptId, verificationMetadata = {}) => {
       opt()
     );
     if (existingOrderByRef) {
+      const wasAlreadyPaid = existingOrderByRef.paymentStatus === PAYMENT_STATUS.PAID;
+
       attempt.status = 'SUCCESS';
       attempt.orderId = existingOrderByRef._id;
       if (!attempt.signatureVerified) {
@@ -82,12 +84,66 @@ export const finalizeOrder = async (attemptId, verificationMetadata = {}) => {
         attempt.verifiedAt = new Date();
         attempt.verificationMethod = verificationMetadata.verificationMethod || 'RECONCILIATION';
       }
+      if (verificationMetadata.sanitizedMetadata) {
+        attempt.webhookEventsReceived.push({
+          eventId: verificationMetadata.eventId || `EVT_${Date.now()}`,
+          eventType: verificationMetadata.eventType || 'payment.confirmed',
+          receivedAt: new Date(),
+          sanitizedMetadata: verificationMetadata.sanitizedMetadata,
+        });
+      }
       await attempt.save(opt());
+
+      // If order was pending payment (e.g. created during checkout preparation), update it to PAID now
+      if (!wasAlreadyPaid) {
+        existingOrderByRef.paymentStatus = PAYMENT_STATUS.PAID;
+        existingOrderByRef.paymentMethod = attempt.paymentProvider || 'RAZORPAY';
+        existingOrderByRef.paymentAttemptId = attempt._id;
+        existingOrderByRef.statusHistory.push({
+          previousStatus: existingOrderByRef.fulfilmentStatus,
+          newStatus: existingOrderByRef.fulfilmentStatus,
+          timestamp: new Date(),
+          actorType: 'SYSTEM',
+          actorId: 'SYSTEM_FINALISATION',
+          note: `Payment confirmed via ${attempt.paymentProvider || 'RAZORPAY'} (${verificationMetadata.verificationMethod || 'ONLINE'})`,
+        });
+        await existingOrderByRef.save(opt());
+
+        // Update checkout draft status
+        if (attempt.checkoutDraftId) {
+          await CheckoutDraft.findByIdAndUpdate(
+            attempt.checkoutDraftId,
+            { status: 'CONVERTED_TO_ORDER', orderId: existingOrderByRef._id },
+            opt()
+          );
+        }
+
+        // Notify admins about payment confirmation
+        const paymentPayload = {
+          _id: String(existingOrderByRef._id),
+          orderId: String(existingOrderByRef._id),
+          orderNumber: existingOrderByRef.orderNumber,
+          amount: existingOrderByRef.finalPayableAmount,
+          totalAmount: existingOrderByRef.finalPayableAmount,
+          customer: existingOrderByRef.deliveryAddress?.fullName || existingOrderByRef.contactDetails?.fullName || 'Customer',
+          customerName: existingOrderByRef.deliveryAddress?.fullName || existingOrderByRef.contactDetails?.fullName || 'Customer',
+          paymentProvider: attempt.paymentProvider || 'RAZORPAY',
+        };
+        emitToAdmins('payment-success', paymentPayload);
+        emitToAdmins('new-order', paymentPayload);
+        emitToAdmins('new_order', paymentPayload);
+
+        // Dispatch order confirmation email with paid status
+        emailService.sendOrderConfirmationEmail(existingOrderByRef).catch((err) => {
+          console.error('[OrderFinalisation] Failed to send order confirmation email:', err.message);
+        });
+      }
+
       if (useTransaction) {
         await session.commitTransaction();
         session.endSession();
       }
-      return { success: true, alreadyProcessed: true, order: existingOrderByRef, opaqueToken: null };
+      return { success: true, alreadyProcessed: wasAlreadyPaid, order: existingOrderByRef, opaqueToken: null };
     }
 
     // Mark as SUCCESS_PENDING_ORDER during claim step
@@ -215,13 +271,19 @@ export const finalizeOrder = async (attemptId, verificationMetadata = {}) => {
       },
     }).catch((err) => console.error('Admin notification error:', err));
 
-    emitToAdmins('new-order', {
+    const liveOrderPayload = {
       _id: String(createdOrder._id),
+      orderId: String(createdOrder._id),
       orderNumber: createdOrder.orderNumber,
       amount: createdOrder.finalPayableAmount,
-      customer: createdOrder.deliveryAddress?.fullName || createdOrder.deliveryAddress?.phone || 'Customer',
+      totalAmount: createdOrder.finalPayableAmount,
+      customer: createdOrder.deliveryAddress?.fullName || createdOrder.contactDetails?.fullName || createdOrder.deliveryAddress?.phone || 'Customer',
+      customerName: createdOrder.deliveryAddress?.fullName || createdOrder.contactDetails?.fullName || createdOrder.deliveryAddress?.phone || 'Customer',
+      itemCount: createdOrder.items?.length,
       createdAt: createdOrder.createdAt,
-    });
+    };
+    emitToAdmins('new-order', liveOrderPayload);
+    emitToAdmins('new_order', liveOrderPayload);
 
     return {
       success: true,

@@ -152,12 +152,24 @@ export const handleRazorpayWebhook = async (req, res, next) => {
     const signature = req.headers['x-razorpay-signature'];
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
 
-    if (webhookSecret && signature) {
-      const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
-      const expected = crypto.createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
-      if (expected !== signature) {
-        return res.status(400).json({ status: 'invalid_signature' });
-      }
+    // Strict Fail-Closed Security: Must reject immediately if secret or signature is absent
+    if (!webhookSecret) {
+      console.error('[Razorpay Webhook] Server missing RAZORPAY_WEBHOOK_SECRET.');
+      return res.status(500).json({ status: 'error', message: 'Webhook secret not configured on server' });
+    }
+
+    if (!signature) {
+      console.warn('[Razorpay Webhook Rejected] Missing x-razorpay-signature header.');
+      return res.status(400).json({ status: 'error', message: 'Missing x-razorpay-signature header' });
+    }
+
+    // Exact raw buffer verification
+    const rawBody = req.rawBody || (typeof req.body === 'string' ? req.body : JSON.stringify(req.body));
+    const expected = crypto.createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
+
+    if (expected !== signature) {
+      console.warn('[Razorpay Webhook Rejected] Webhook signature mismatch.');
+      return res.status(400).json({ status: 'error', message: 'Invalid signature' });
     }
 
     const event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
@@ -182,8 +194,8 @@ export const handleRazorpayWebhook = async (req, res, next) => {
 
     return res.status(200).json({ status: 'ok' });
   } catch (err) {
-    console.error('Webhook error:', err.message);
-    return res.status(200).json({ status: 'error_logged' });
+    console.error('[Razorpay Webhook Error]:', err.message);
+    return res.status(500).json({ status: 'error', message: err.message });
   }
 };
 

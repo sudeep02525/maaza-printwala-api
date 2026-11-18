@@ -533,14 +533,20 @@ export const reviewAndPreparePayment = async (req, res, next) => {
         await Cart.findOneAndUpdate({ _id: targetCartId }, { $set: { items: [], cartTotal: 0 } });
       }
 
-      // Live Socket Event to Admin Dashboard
-      emitToAdmins('new_order', {
-        orderId: createdOrder._id,
+      // Live Socket Event to Admin Dashboard (support both hyphen and underscore conventions)
+      const liveOrderPayload = {
+        _id: String(createdOrder._id),
+        orderId: String(createdOrder._id),
         orderNumber: createdOrder.orderNumber,
+        amount: createdOrder.finalPayableAmount,
         totalAmount: createdOrder.finalPayableAmount,
-        customerName: createdOrder.contactDetails?.fullName,
+        customer: createdOrder.contactDetails?.fullName || createdOrder.deliveryAddress?.fullName || 'Customer',
+        customerName: createdOrder.contactDetails?.fullName || createdOrder.deliveryAddress?.fullName || 'Customer',
         itemCount: createdOrder.items?.length,
-      });
+        createdAt: createdOrder.createdAt || new Date(),
+      };
+      emitToAdmins('new-order', liveOrderPayload);
+      emitToAdmins('new_order', liveOrderPayload);
 
       // Dispatch order confirmation email
       emailService.sendOrderConfirmationEmail(createdOrder).catch((err) => {
