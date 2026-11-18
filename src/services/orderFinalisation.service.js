@@ -5,6 +5,7 @@ import CheckoutDraft from '../models/CheckoutDraft.js';
 import Order from '../models/Order.js';
 import Cart from '../models/Cart.js';
 import Notification from '../models/Notification.js';
+import emailService from './email.service.js';
 import { generateOrderNumber } from './orderNumber.service.js';
 import { PAYMENT_STATUS, FULFILMENT_STATUS } from '../constants/order.constants.js';
 import { emitToAdmins } from '../socket.js';
@@ -184,6 +185,10 @@ export const finalizeOrder = async (attemptId, verificationMetadata = {}) => {
     }
 
     // Trigger asynchronous notification (Email / In-App)
+    emailService.sendOrderConfirmationEmail(createdOrder).catch((err) => {
+      console.error('[OrderFinalisation] Failed to dispatch order confirmation email:', err.message);
+    });
+
     Notification.create({
       user: createdOrder.user,
       recipient: createdOrder.deliveryAddress?.phone || createdOrder.orderNumber,

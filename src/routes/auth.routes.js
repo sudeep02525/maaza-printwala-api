@@ -1,18 +1,27 @@
 import express from 'express';
+import rateLimit from 'express-rate-limit';
 import * as authController from '../controllers/auth.controller.js';
 import { authenticate } from '../middleware/auth.middleware.js';
 
 const router = express.Router();
 
+// Strict rate limit for brute-force sensitive endpoints (10 attempts / 15 min)
+const strictLoginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  message: { success: false, message: 'Too many login attempts. Please wait 15 minutes before trying again.' },
+  validate: { xForwardedForHeader: false }
+});
+
 router.post('/register', authController.register);
-router.post('/login', authController.login);
+router.post('/login', strictLoginLimiter, authController.login);
 router.post('/logout', authenticate, authController.logout);
 router.get('/me', authenticate, authController.getProfile);
 router.post('/refresh', authController.refresh);
 
 // Password recovery
-router.post('/forgot-password', authController.forgotPassword);
-router.post('/reset-password', authController.resetPassword);
+router.post('/forgot-password', strictLoginLimiter, authController.forgotPassword);
+router.post('/reset-password', strictLoginLimiter, authController.resetPassword);
 
 // Profile & Security (authenticated)
 router.put('/profile', authenticate, authController.updateProfile);

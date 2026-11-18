@@ -20,6 +20,9 @@
     "url": "https://github.com/sudeep02525/maaza-printwala-api/issues"
   },
   "homepage": "https://github.com/sudeep02525/maaza-printwala-api#readme",
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "dependencies": {
     "bcrypt": "^6.0.0",
     "cloudinary": "^2.11.0",
@@ -35,6 +38,8 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.8.0",
     "multer": "^2.2.0",
+    "nodemailer": "^10.6.0",
+    "razorpay": "^2.9.8",
     "socket.io": "^4.8.4",
     "uuid": "^14.0.1",
     "yup": "^1.7.1"

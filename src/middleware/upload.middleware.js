@@ -57,5 +57,16 @@ const artworkFilter = (req, file, cb) => {
   }
 };
 
-export const uploadProductImage = multer({ storage: productStorage, fileFilter: imageFilter });
-export const uploadArtwork = multer({ storage: artworkStorage, fileFilter: artworkFilter });
+const MAX_FILE_SIZE = 25 * 1024 * 1024; // 25 MB
+
+export const uploadProductImage = multer({
+  storage: productStorage,
+  limits: { fileSize: MAX_FILE_SIZE },
+  fileFilter: imageFilter
+});
+
+export const uploadArtwork = multer({
+  storage: artworkStorage,
+  limits: { fileSize: MAX_FILE_SIZE },
+  fileFilter: artworkFilter
+});

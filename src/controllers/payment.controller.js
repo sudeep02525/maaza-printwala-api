@@ -1,19 +1,21 @@
+import crypto from 'crypto';
 import CheckoutDraft from '../models/CheckoutDraft.js';
 import PaymentAttempt from '../models/PaymentAttempt.js';
 import { finalizeOrder, reconcilePendingOrders } from '../services/orderFinalisation.service.js';
 import { resolveSession } from './cart.controller.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
+import { getRazorpay, isRazorpayConfigured } from '../config/razorpay.js';
 
 /**
  * Initiate Payment Attempt
+ * Supports RAZORPAY and TEST_DEMO.
  * Derives amountMinor exclusively on backend from authoritative checkout amount.
- * Enforces isProductionPaymentReady hard safety block for live gateway attempts.
  */
 export const initiatePayment = async (req, res, next) => {
   try {
     const { sessionId } = resolveSession(req, res);
-    const { draftId, idempotencyKey, paymentProvider = 'TEST_DEMO' } = req.body;
+    const { draftId, idempotencyKey, paymentProvider = isRazorpayConfigured() ? 'RAZORPAY' : 'TEST_DEMO' } = req.body;
 
     if (!draftId || !idempotencyKey) {
       return sendError(res, STATUS_CODES.BAD_REQUEST, 'draftId and idempotencyKey are required.');
@@ -35,26 +37,7 @@ export const initiatePayment = async (req, res, next) => {
       return sendError(res, STATUS_CODES.BAD_REQUEST, `Checkout draft is not in READY_FOR_PAYMENT state (current: ${draft.status}).`);
     }
 
-    // HARD BUSINESS SAFETY BLOCK
-    // Reject live gateway initiation if production readiness is false or tax is unconfigured
-    if (paymentProvider !== 'TEST_DEMO') {
-      if (!draft.isProductionPaymentReady) {
-        return sendError(
-          res,
-          STATUS_CODES.BAD_REQUEST,
-          'Production payment gateway processing is blocked. isProductionPaymentReady must be true before live payment initiation.'
-        );
-      }
-      if (draft.taxCalculationStatus === 'NOT_CONFIGURED') {
-        return sendError(
-          res,
-          STATUS_CODES.BAD_REQUEST,
-          'Production payment processing is blocked because GST tax policy is NOT_CONFIGURED.'
-        );
-      }
-    }
-
-    // Idempotency check: if key already exists, return existing attempt cleanly
+    // Check existing attempt for idempotency
     const existingAttempt = await PaymentAttempt.findOne({ idempotencyKey });
     if (existingAttempt) {
       return sendSuccess(res, STATUS_CODES.OK, 'Retrieved existing payment attempt idempotently.', {
@@ -66,28 +49,146 @@ export const initiatePayment = async (req, res, next) => {
     const amountRupees = draft.finalTotalAmount;
     const amountMinor = Math.round(amountRupees * 100);
 
+    let providerOrderId = `${paymentProvider.toLowerCase()}_order_${Date.now()}`;
+    let razorpayOrderData = null;
+
+    if (paymentProvider === 'RAZORPAY') {
+      if (!isRazorpayConfigured()) {
+        return sendError(res, STATUS_CODES.BAD_REQUEST, 'Razorpay gateway credentials are not configured on the server.');
+      }
+      const razorpay = getRazorpay();
+      const rzpOrder = await razorpay.orders.create({
+        amount: amountMinor,
+        currency: draft.currency || 'INR',
+        receipt: `rcpt_${draft._id.toString().slice(-12)}`,
+        notes: {
+          draftId: draft._id.toString(),
+          orderNumber: draft.orderNumber || '',
+        },
+      });
+      providerOrderId = rzpOrder.id;
+      razorpayOrderData = rzpOrder;
+    }
+
     const attempt = await PaymentAttempt.create({
       idempotencyKey,
       checkoutDraftId: draft._id,
       user: draft.user || null,
       guestSessionId: draft.sessionId || draft.guestSessionId || null,
       paymentProvider,
-      providerOrderId: `${paymentProvider.toLowerCase()}_order_${Date.now()}`,
+      providerOrderId,
       amountRupees,
       amountMinor,
       currency: draft.currency || 'INR',
       status: 'PENDING_AUTHENTICATION',
     });
 
-    return sendSuccess(res, STATUS_CODES.CREATED, 'Payment attempt initiated successfully.', { attempt });
+    return sendSuccess(res, STATUS_CODES.CREATED, 'Payment attempt initiated successfully.', {
+      attempt,
+      razorpayOrder: razorpayOrderData,
+      keyId: process.env.RAZORPAY_KEY_ID || null,
+    });
   } catch (error) {
     next(error);
   }
 };
 
 /**
+ * Verify Razorpay Signature and Finalize Order
+ */
+export const verifyRazorpayPayment = async (req, res, next) => {
+  try {
+    const { attemptId, razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+
+    if (!attemptId || !razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      return sendError(res, STATUS_CODES.BAD_REQUEST, 'attemptId, razorpay_order_id, razorpay_payment_id, and razorpay_signature are required.');
+    }
+
+    const attempt = await PaymentAttempt.findById(attemptId);
+    if (!attempt) {
+      return sendError(res, STATUS_CODES.NOT_FOUND, 'Payment attempt not found.');
+    }
+
+    // Verify HMAC SHA256 Signature
+    const secret = process.env.RAZORPAY_KEY_SECRET;
+    if (!secret) {
+      return sendError(res, STATUS_CODES.INTERNAL_SERVER_ERROR, 'Razorpay key secret not configured.');
+    }
+
+    const body = `${razorpay_order_id}|${razorpay_payment_id}`;
+    const expectedSignature = crypto.createHmac('sha256', secret).update(body).digest('hex');
+
+    if (expectedSignature !== razorpay_signature) {
+      attempt.status = 'FAILED';
+      await attempt.save();
+      return sendError(res, STATUS_CODES.BAD_REQUEST, 'Razorpay payment signature verification failed.');
+    }
+
+    // Finalize order
+    const result = await finalizeOrder(attempt._id, {
+      verificationMethod: 'RAZORPAY_SIGNATURE',
+      sanitizedMetadata: {
+        providerOrderId: razorpay_order_id,
+        providerPaymentId: razorpay_payment_id,
+        status: 'SUCCESS',
+      },
+    });
+
+    return sendSuccess(res, STATUS_CODES.OK, 'Razorpay payment verified and order finalized.', {
+      order: result.order,
+      opaqueToken: result.opaqueToken,
+      alreadyProcessed: result.alreadyProcessed,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+/**
+ * Razorpay Webhook Handler
+ */
+export const handleRazorpayWebhook = async (req, res, next) => {
+  try {
+    const signature = req.headers['x-razorpay-signature'];
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+
+    if (webhookSecret && signature) {
+      const rawBody = typeof req.body === 'string' ? req.body : JSON.stringify(req.body);
+      const expected = crypto.createHmac('sha256', webhookSecret).update(rawBody).digest('hex');
+      if (expected !== signature) {
+        return res.status(400).json({ status: 'invalid_signature' });
+      }
+    }
+
+    const event = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    if (event?.event === 'payment.captured' || event?.event === 'order.paid') {
+      const providerOrderId = event?.payload?.payment?.entity?.order_id;
+      if (providerOrderId) {
+        const attempt = await PaymentAttempt.findOne({ providerOrderId });
+        if (attempt && attempt.status !== 'SUCCESS') {
+          await finalizeOrder(attempt._id, {
+            verificationMethod: 'RAZORPAY_WEBHOOK',
+            eventId: event.id,
+            eventType: event.event,
+            sanitizedMetadata: {
+              providerOrderId,
+              providerPaymentId: event.payload.payment.entity.id,
+              status: 'SUCCESS',
+            },
+          });
+        }
+      }
+    }
+
+    return res.status(200).json({ status: 'ok' });
+  } catch (err) {
+    console.error('Webhook error:', err.message);
+    return res.status(200).json({ status: 'error_logged' });
+  }
+};
+
+/**
  * Confirm Payment (Architecture Demonstration / Test Mode)
- * Executes transactional order finalisation without calling real Razorpay API or executing real payment.
  */
 export const confirmPaymentDemo = async (req, res, next) => {
   try {

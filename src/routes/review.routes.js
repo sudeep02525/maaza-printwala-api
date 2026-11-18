@@ -15,6 +15,7 @@ router.post('/product/:productId', authenticate, reviewController.createReview);
 // Admin routes
 router.get('/admin', authenticate, authorize(ROLES.ADMIN), reviewController.getAdminReviews);
 router.patch('/admin/:id/approval', authenticate, authorize(ROLES.ADMIN), reviewController.toggleReviewApproval);
+router.patch('/admin/:id/approve', authenticate, authorize(ROLES.ADMIN), reviewController.toggleReviewApproval);
 router.delete('/admin/:id', authenticate, authorize(ROLES.ADMIN), reviewController.deleteReview);
 
 export default router;

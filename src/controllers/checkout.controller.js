@@ -1,7 +1,13 @@
 import CheckoutDraft from '../models/CheckoutDraft.js';
 import Cart from '../models/Cart.js';
+import Order from '../models/Order.js';
 import DeliveryRule from '../models/DeliveryRule.js';
 import Settings from '../models/Settings.js';
+import crypto from 'crypto';
+import { generateOrderNumber } from '../services/orderNumber.service.js';
+import { PAYMENT_STATUS, FULFILMENT_STATUS } from '../constants/order.constants.js';
+import { emitToAdmins } from '../socket.js';
+import emailService from '../services/email.service.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 import { resolveSession, validateAndPriceItem, recalculateCartTotal } from './cart.controller.js';
@@ -468,13 +474,92 @@ export const reviewAndPreparePayment = async (req, res, next) => {
       return sendError(res, STATUS_CODES.BAD_REQUEST, 'Please select a delivery method.');
     }
 
-    // Transition to READY_FOR_PAYMENT
+    // Check if an Order already exists for this draft (idempotency)
+    let existingOrder = await Order.findOne({ checkoutDraftId: draft._id });
+    let createdOrder = existingOrder;
+
+    if (!existingOrder) {
+      const orderNumber = await generateOrderNumber();
+      let opaqueToken = null;
+      let guestAccessKeyHash = null;
+      let guestTokenExpiresAt = null;
+
+      if (!draft.user && (draft.sessionId || draft.guestSessionId || sessionId)) {
+        opaqueToken = `g_trk_${crypto.randomBytes(32).toString('hex')}`;
+        guestAccessKeyHash = crypto.createHash('sha256').update(opaqueToken).digest('hex');
+        guestTokenExpiresAt = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000);
+      }
+
+      const orderResults = await Order.create([
+        {
+          orderNumber,
+          user: draft.user || req.user?._id || null,
+          guestSessionId: draft.sessionId || draft.guestSessionId || sessionId || null,
+          guestAccessKeyHash,
+          guestTokenExpiresAt,
+          guestTokenRevoked: false,
+          checkoutDraftId: draft._id,
+          items: draft.itemsSnapshot,
+          contactDetails: draft.contactDetails,
+          deliveryAddress: draft.deliveryAddress,
+          billingDetails: draft.billingDetails,
+          deliveryMethodSnapshot: draft.deliveryMethodSnapshot,
+          authoritativeSubtotal: draft.authoritativeSubtotal,
+          deliveryCharge: draft.deliveryCharge,
+          taxCalculationStatus: draft.taxCalculationStatus,
+          taxAmount: draft.taxAmount,
+          finalPayableAmount: draft.finalTotalAmount,
+          currency: draft.currency || 'INR',
+          paymentStatus: PAYMENT_STATUS.PENDING,
+          fulfilmentStatus: FULFILMENT_STATUS.ORDER_RECEIVED,
+          paymentMethod: 'OFFLINE_PENDING',
+          statusHistory: [
+            {
+              previousStatus: null,
+              newStatus: FULFILMENT_STATUS.ORDER_RECEIVED,
+              timestamp: new Date(),
+              actorType: 'CUSTOMER',
+              actorId: draft.user ? String(draft.user) : 'GUEST_CHECKOUT',
+              note: 'Order registered via storefront checkout. Payment pending offline billing/confirmation.',
+            },
+          ],
+        },
+      ]);
+      createdOrder = orderResults[0];
+
+      // Clear customer Cart so items don't linger
+      const targetCartId = draft.cart || cart._id;
+      if (targetCartId) {
+        await Cart.findOneAndUpdate({ _id: targetCartId }, { $set: { items: [], cartTotal: 0 } });
+      }
+
+      // Live Socket Event to Admin Dashboard
+      emitToAdmins('new_order', {
+        orderId: createdOrder._id,
+        orderNumber: createdOrder.orderNumber,
+        totalAmount: createdOrder.finalPayableAmount,
+        customerName: createdOrder.contactDetails?.fullName,
+        itemCount: createdOrder.items?.length,
+      });
+
+      // Dispatch order confirmation email
+      emailService.sendOrderConfirmationEmail(createdOrder).catch((err) => {
+        console.error('[Checkout] Failed to dispatch order confirmation email:', err.message);
+      });
+    }
+
+    // Transition to READY_FOR_PAYMENT with created order linkage
     draft.status = 'READY_FOR_PAYMENT';
-    draft.isProductionPaymentReady = false; // MUST REMAIN FALSE
-    draft.productionBlockReason = 'Pending business configuration: Live online payments will be enabled once merchant onboarding and gateway credential verification are completed.';
+    draft.orderId = createdOrder._id;
+    draft.orderNumber = createdOrder.orderNumber;
+    draft.isProductionPaymentReady = false;
+    draft.productionBlockReason = 'Live online payments will be enabled once gateway credentials are verified. Order registered in pending payment mode.';
     await draft.save();
 
-    return sendSuccess(res, STATUS_CODES.OK, 'Checkout validated and ready for payment phase', { draft });
+    return sendSuccess(res, STATUS_CODES.OK, 'Order registered successfully and ready for fulfillment', {
+      draft,
+      order: createdOrder,
+    });
   } catch (error) {
     next(error);
   }

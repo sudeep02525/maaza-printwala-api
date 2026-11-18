@@ -6,6 +6,7 @@ import DeliveryRule from '../models/DeliveryRule.js';
 import SearchLog from '../models/SearchLog.js';
 import Notification from '../models/Notification.js';
 import Settings from '../models/Settings.js';
+import emailService from '../services/email.service.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 
@@ -210,6 +211,10 @@ export const updateOrderStatus = async (req, res, next) => {
     await order.save();
 
     // Trigger Notification for user
+    emailService.sendOrderStatusUpdateEmail(order, order.fulfilmentStatus, note).catch(err => {
+      console.error('[Admin] Failed to dispatch order status update email:', err.message);
+    });
+
     if (order.user || order.deliveryAddress?.phone) {
       Notification.create({
         user: order.user,

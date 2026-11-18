@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import Address from '../models/Address.js';
 import Notification from '../models/Notification.js';
+import emailService from '../services/email.service.js';
 import crypto from 'crypto';
 import { generateAccessToken, generateRefreshToken, verifyRefreshToken } from '../utils/jwt.util.js';
 import { sendSuccess, sendError } from '../utils/response.util.js';
@@ -209,19 +210,22 @@ export const forgotPassword = async (req, res, next) => {
     user.resetPasswordExpire = Date.now() + 30 * 60 * 1000;
     await user.save();
 
+    // Dispatch real email via EmailService
+    emailService.sendPasswordResetEmail(user.email, resetToken, user.name).catch(err => {
+      console.error('[Auth] Failed to dispatch password reset email:', err.message);
+    });
+
     await Notification.create({
       user: user._id,
       recipient: user.email,
       channel: 'EMAIL',
       subject: 'Password Reset Request',
-      message: `Password reset token: ${resetToken}. Valid for 30 minutes.`,
+      message: 'Password reset request received. Valid for 30 minutes.',
       status: 'SENT',
-      metadata: { resetToken },
+      metadata: { requestedAt: new Date().toISOString() },
     }).catch((err) => console.error('Notification log error:', err));
 
-    return sendSuccess(res, STATUS_CODES.OK, 'If an account exists with that email, a password reset link has been dispatched.', {
-      resetToken,
-    });
+    return sendSuccess(res, STATUS_CODES.OK, 'If an account exists with that email, a password reset link has been dispatched.');
   } catch (error) {
     next(error);
   }

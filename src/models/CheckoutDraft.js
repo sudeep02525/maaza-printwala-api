@@ -187,6 +187,15 @@ const checkoutDraftSchema = new mongoose.Schema(
       type: String,
       default: null,
     },
+    orderId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Order',
+      default: null,
+    },
+    orderNumber: {
+      type: String,
+      default: null,
+    },
 
     // Configurable Expiry
     expiresAt: {

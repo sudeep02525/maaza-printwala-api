@@ -6,6 +6,7 @@ import { sendSuccess, sendError } from '../utils/response.util.js';
 import { STATUS_CODES } from '../constants/error.constants.js';
 import { calculateProductPrice } from '../utils/pricing.util.js';
 import { searchProducts, refreshIndex } from '../services/search.service.js';
+import storageService from '../services/storage.service.js';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -243,10 +244,20 @@ export const createProduct = async (req, res, next) => {
     // Process uploaded files
     const images = [];
     if (req.files && req.files.length > 0) {
-      req.files.forEach(file => {
-        // Save relative path
-        images.push(`/images/products/${file.filename}`);
-      });
+      for (const file of req.files) {
+        if (storageService.provider === 'cloudinary') {
+          try {
+            const uploaded = await storageService.uploadImage(file.path, 'maaza-printwala/products');
+            images.push(uploaded.url);
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+          } catch (uploadErr) {
+            console.error('Cloudinary product upload error, falling back to local path:', uploadErr.message);
+            images.push(`/images/products/${file.filename}`);
+          }
+        } else {
+          images.push(`/images/products/${file.filename}`);
+        }
+      }
     }
 
     const newProduct = new Product({
@@ -325,15 +336,31 @@ export const updateProduct = async (req, res, next) => {
 
     // If new images are uploaded
     if (req.files && req.files.length > 0) {
-      const newImages = req.files.map(file => `/images/products/${file.filename}`);
+      const newImages = [];
+      for (const file of req.files) {
+        if (storageService.provider === 'cloudinary') {
+          try {
+            const uploaded = await storageService.uploadImage(file.path, 'maaza-printwala/products');
+            newImages.push(uploaded.url);
+            if (fs.existsSync(file.path)) fs.unlinkSync(file.path);
+          } catch (uploadErr) {
+            console.error('Cloudinary product upload error, falling back to local path:', uploadErr.message);
+            newImages.push(`/images/products/${file.filename}`);
+          }
+        } else {
+          newImages.push(`/images/products/${file.filename}`);
+        }
+      }
       
       // Optionally delete old images from filesystem here
       if (product.images && product.images.length > 0) {
         product.images.forEach(imgUrl => {
-          const fileName = path.basename(imgUrl);
-          const filePath = path.join(__dirname, '..', '..', 'public', 'images', 'products', fileName);
-          if (fs.existsSync(filePath)) {
-            fs.unlinkSync(filePath);
+          if (!imgUrl.startsWith('http')) {
+            const fileName = path.basename(imgUrl);
+            const filePath = path.join(__dirname, '..', '..', 'public', 'images', 'products', fileName);
+            if (fs.existsSync(filePath)) {
+              fs.unlinkSync(filePath);
+            }
           }
         });
       }
