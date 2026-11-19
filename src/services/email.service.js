@@ -6,7 +6,7 @@ dotenv.config();
 class EmailService {
   constructor() {
     this.isConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
-    this.fromAddress = process.env.SMTP_FROM || '"Maaza Printwala" <support@maazaprintwala.in>';
+    this.fromAddress = process.env.SMTP_FROM || '"Maaza Printwala" <support@mazaprintwala.com>';
 
     if (this.isConfigured) {
       this.transporter = nodemailer.createTransport({
@@ -49,7 +49,7 @@ class EmailService {
   }
 
   async sendPasswordResetEmail(to, resetToken, userName = 'Valued Customer') {
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://maazaprintwala.in';
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://mazaprintwala.com';
     const resetUrl = `${siteUrl}/reset-password?token=${resetToken}`;
 
     const subject = 'Password Reset Request - Maaza Printwala';

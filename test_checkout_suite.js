@@ -114,7 +114,7 @@ async function runTestSuite() {
     const contactRes = await api(
       'PATCH',
       '/checkout/contact',
-      { draftId: draft._id, fullName: 'Rahul Sharma', email: 'rahul@maazaprintwala.demo', phone: '9876543210' },
+      { draftId: draft._id, fullName: 'Rahul Sharma', email: 'rahul@mazaprintwala.demo', phone: '9876543210' },
       { 'x-cart-session-id': GUEST_SESSION_ID }
     );
     assert(contactRes.data.data.draft.contactDetails.fullName === 'Rahul Sharma', '3. Contact validation: Valid contact details saved');
