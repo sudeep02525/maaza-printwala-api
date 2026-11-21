@@ -63,3 +63,58 @@ export const handleArtworkUpload = async (req, res, next) => {
     next(error);
   }
 };
+
+const ALLOWED_IMAGE_MIME_TYPES = [
+  'image/png',
+  'image/jpeg',
+  'image/jpg',
+  'image/webp',
+  'image/svg+xml',
+  'image/gif',
+];
+
+const imageUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024, // 10 MB
+  },
+  fileFilter: (req, file, cb) => {
+    if (!ALLOWED_IMAGE_MIME_TYPES.includes(file.mimetype)) {
+      return cb(new Error('Invalid image format. Allowed formats: PNG, JPG, WEBP, SVG, GIF.'));
+    }
+    cb(null, true);
+  },
+}).single('image');
+
+export const uploadImageMiddleware = (req, res, next) => {
+  imageUpload(req, res, (err) => {
+    if (err instanceof multer.MulterError) {
+      if (err.code === 'LIMIT_FILE_SIZE') {
+        return sendError(res, STATUS_CODES.BAD_REQUEST, 'Image file size exceeds maximum limit of 10MB.');
+      }
+      return sendError(res, STATUS_CODES.BAD_REQUEST, err.message);
+    } else if (err) {
+      return sendError(res, STATUS_CODES.BAD_REQUEST, err.message);
+    }
+    next();
+  });
+};
+
+export const handleImageUpload = async (req, res, next) => {
+  try {
+    if (!req.file) {
+      return sendError(res, STATUS_CODES.BAD_REQUEST, 'No image file provided.');
+    }
+
+    const { buffer } = req.file;
+    const folder = req.body?.folder || 'maaza-printwala/cms';
+    const result = await storageService.uploadImage(buffer, folder);
+
+    return sendSuccess(res, STATUS_CODES.OK, 'Image uploaded successfully.', {
+      url: result.url,
+      publicId: result.publicId,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
