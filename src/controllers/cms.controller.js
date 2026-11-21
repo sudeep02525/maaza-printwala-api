@@ -31,12 +31,13 @@ export const getHomepageContent = async (req, res, next) => {
 export const updateHomepageContent = async (req, res, next) => {
   try {
     const { key, section, title, content, isActive, sortOrder } = req.body;
+    const payload = { ...req.body, isDemoData: false };
     let cmsContent = await CMSContent.findOne({ key });
     
     if (cmsContent) {
-      cmsContent = await CMSContent.findOneAndUpdate({ key }, req.body, { new: true, runValidators: true });
+      cmsContent = await CMSContent.findOneAndUpdate({ key }, payload, { new: true, runValidators: true });
     } else {
-      cmsContent = await CMSContent.create(req.body);
+      cmsContent = await CMSContent.create(payload);
     }
     
     return sendSuccess(res, STATUS_CODES.OK, 'CMS content updated successfully', { content: cmsContent });

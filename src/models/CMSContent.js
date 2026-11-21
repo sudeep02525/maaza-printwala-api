@@ -30,7 +30,7 @@ const cmsContentSchema = new mongoose.Schema(
     },
     isDemoData: {
       type: Boolean,
-      default: true,
+      default: false,
     },
   },
   {
