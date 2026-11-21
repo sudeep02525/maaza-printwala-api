@@ -43,14 +43,14 @@ export const register = async (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
     res.cookie(refreshCookieName, refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     const cartSessionId = req.cookies?.maaza_cart_session || req.headers['x-cart-session-id'];
@@ -92,14 +92,14 @@ export const login = async (req, res, next) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
     res.cookie(refreshCookieName, refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     const cartSessionId = req.cookies?.maaza_cart_session || req.headers['x-cart-session-id'];
@@ -158,29 +158,48 @@ export const refresh = async (req, res, next) => {
       return sendError(res, STATUS_CODES.UNAUTHORIZED, 'Invalid or expired refresh token');
     }
 
-    const user = await User.findById(decoded.id);
-    if (!user || user.refreshToken !== refreshToken) {
+    const user = await User.findById(decoded.id).select(
+      '+refreshToken +previousRefreshToken +previousRefreshTokenExpiresAt'
+    );
+    if (!user) {
+      return sendError(res, STATUS_CODES.UNAUTHORIZED, 'User not found');
+    }
+
+    const isCurrentToken = user.refreshToken === refreshToken;
+    const isGraceToken =
+      user.previousRefreshToken === refreshToken &&
+      user.previousRefreshTokenExpiresAt &&
+      user.previousRefreshTokenExpiresAt > new Date();
+
+    if (!isCurrentToken && !isGraceToken) {
       return sendError(res, STATUS_CODES.UNAUTHORIZED, 'Invalid refresh token');
     }
 
     const accessToken = generateAccessToken(user);
-    const newRefreshToken = generateRefreshToken(user);
 
-    user.refreshToken = newRefreshToken;
-    await user.save();
+    // If refreshing with the active current token, rotate and grant 30s grace window for in-flight requests
+    let outgoingRefreshToken = user.refreshToken;
+    if (isCurrentToken) {
+      const newRefreshToken = generateRefreshToken(user);
+      user.previousRefreshToken = user.refreshToken;
+      user.previousRefreshTokenExpiresAt = new Date(Date.now() + 30 * 1000); // 30 seconds grace
+      user.refreshToken = newRefreshToken;
+      await user.save();
+      outgoingRefreshToken = newRefreshToken;
+    }
 
     res.cookie(accessCookieName, accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 15 * 60 * 1000,
+      maxAge: 60 * 60 * 1000,
     });
 
-    res.cookie(refreshCookieName, newRefreshToken, {
+    res.cookie(refreshCookieName, outgoingRefreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 30 * 24 * 60 * 60 * 1000,
     });
 
     return sendSuccess(res, STATUS_CODES.OK, 'Token refreshed successfully', {
