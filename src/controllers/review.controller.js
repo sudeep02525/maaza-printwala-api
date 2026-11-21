@@ -17,7 +17,7 @@ export const getProductReviews = async (req, res, next) => {
       queryId = prod._id;
     }
 
-    const reviews = await Review.find({ product: queryId, isApproved: true })
+    const reviews = await Review.find({ product: queryId, isApproved: true, isDemoData: { $ne: true } })
       .populate('user', 'name')
       .sort({ createdAt: -1 })
       .lean();
@@ -25,7 +25,7 @@ export const getProductReviews = async (req, res, next) => {
     const count = reviews.length;
     const avgRating = count > 0 
       ? Math.round((reviews.reduce((acc, r) => acc + (r.rating || 5), 0) / count) * 10) / 10 
-      : 5.0;
+      : 0;
 
     const distribution = { 5: 0, 4: 0, 3: 0, 2: 0, 1: 0 };
     reviews.forEach((r) => {

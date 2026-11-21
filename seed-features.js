@@ -75,7 +75,7 @@ async function seed() {
             rating: revData.rating,
             comment: revData.comment,
             isApproved: true,
-            isDemoData: false,
+            isDemoData: true,
           });
         }
       }
