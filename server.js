@@ -19,9 +19,19 @@ const app = express();
 // Enable trust proxy for reverse proxies (Render, Heroku, Cloudflare, etc.)
 app.set('trust proxy', 1);
 
-const allow = (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:3001,http://127.0.0.1:3000,http://127.0.0.1:3001')
-  .split(',')
-  .map((s) => s.trim());
+const DEFAULT_ORIGINS = [
+  'http://localhost:3000',
+  'http://localhost:3001',
+  'http://127.0.0.1:3000',
+  'http://127.0.0.1:3001',
+  'https://mazaprintwala.com',
+  'https://www.mazaprintwala.com',
+  'https://admin.mazaprintwala.com',
+];
+const envOrigins = process.env.CORS_ORIGINS
+  ? process.env.CORS_ORIGINS.split(',').map((s) => s.trim()).filter(Boolean)
+  : [];
+const allow = Array.from(new Set([...DEFAULT_ORIGINS, ...envOrigins]));
 app.use(
   cors({
     origin: (o, cb) => cb(null, !o || allow.includes(o)),

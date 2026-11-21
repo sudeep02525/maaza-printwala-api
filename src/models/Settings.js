@@ -6,7 +6,7 @@ const settingsSchema = new mongoose.Schema(
     storeName: { type: String, default: 'Maza Printwala' },
     tagline: { type: String, default: 'Enterprise Commercial Printing & Merchandising' },
     supportEmail: { type: String, default: 'imagemazaprintwala@gmail.com' },
-    supportPhone: { type: String, default: '1800-PRINT-NOW' },
+    supportPhone: { type: String, default: '+91 7700054984' },
     dispatchCity: { type: String, default: 'Mumbai, Maharashtra' },
     gstRate: { type: Number, default: 18 },
     freeShippingThreshold: { type: Number, default: 999 },

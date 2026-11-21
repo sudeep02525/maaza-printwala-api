@@ -37,7 +37,7 @@ const seedDatabase = async () => {
       email: 'admin@mazaprintwala.com',
       password: 'admin123',
       role: ROLES.ADMIN,
-      phone: '+919876543210',
+      phone: '+917700054984',
     });
 
     const demoUser = await User.create({
