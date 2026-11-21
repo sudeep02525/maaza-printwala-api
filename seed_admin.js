@@ -16,7 +16,13 @@ const seedAdmin = async () => {
     const { ROLES } = (await import('./src/constants/roles.constants.js'));
 
     const adminEmail = 'imagemazaprintwala@gmail.com';
-    const adminPassword = 'MaazaAdmin!Secure2026';
+    const adminPassword = 'Sudeep@00';
+
+    // Delete legacy/demo admin account if present
+    const deletedLegacy = await User.deleteMany({ email: 'admin@mazaprintwala.com' });
+    if (deletedLegacy.deletedCount > 0) {
+      console.log(`Deleted ${deletedLegacy.deletedCount} legacy admin account(s) (admin@mazaprintwala.com).`);
+    }
 
     const existingAdmin = await User.findOne({ email: adminEmail });
     if (existingAdmin) {

@@ -39,9 +39,9 @@ const seedDatabase = async () => {
 
     // 1. Seed Users (Production Admin & Customer Account)
     const adminUser = await User.create({
-      name: 'Maaza Admin',
-      email: 'admin@mazaprintwala.com',
-      password: 'admin123',
+      name: 'Maza Printwala Admin',
+      email: 'imagemazaprintwala@gmail.com',
+      password: 'Sudeep@00',
       role: ROLES.ADMIN,
       phone: '+917700054984',
     });
