@@ -1,0 +1,803 @@
+{
+  "/images/banner_caps.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262651/maaza-printwala/images/banner_caps.jpg",
+    "publicId": "maaza-printwala/images/banner_caps",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 739923,
+    "uploadedAt": "2026-11-21T12:04:11.804Z"
+  },
+  "/images/banner_corporate_gifts.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262652/maaza-printwala/images/banner_corporate_gifts.jpg",
+    "publicId": "maaza-printwala/images/banner_corporate_gifts",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 709954,
+    "uploadedAt": "2026-11-21T12:04:14.023Z"
+  },
+  "/images/all_products_banner.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262655/maaza-printwala/images/all_products_banner.jpg",
+    "publicId": "maaza-printwala/images/all_products_banner",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 652697,
+    "uploadedAt": "2026-11-21T12:04:15.653Z"
+  },
+  "/images/banner_flyers.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262654/maaza-printwala/images/banner_flyers.jpg",
+    "publicId": "maaza-printwala/images/banner_flyers",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 795265,
+    "uploadedAt": "2026-11-21T12:04:15.989Z"
+  },
+  "/images/banner_mugs.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262656/maaza-printwala/images/banner_mugs.jpg",
+    "publicId": "maaza-printwala/images/banner_mugs",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 709573,
+    "uploadedAt": "2026-11-21T12:04:16.943Z"
+  },
+  "/images/banner_packaging.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262657/maaza-printwala/images/banner_packaging.jpg",
+    "publicId": "maaza-printwala/images/banner_packaging",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 731223,
+    "uploadedAt": "2026-11-21T12:04:18.119Z"
+  },
+  "/images/banner_labels.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262659/maaza-printwala/images/banner_labels.jpg",
+    "publicId": "maaza-printwala/images/banner_labels",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 859591,
+    "uploadedAt": "2026-11-21T12:04:19.112Z"
+  },
+  "/images/banner_stationery.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262659/maaza-printwala/images/banner_stationery.jpg",
+    "publicId": "maaza-printwala/images/banner_stationery",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 707287,
+    "uploadedAt": "2026-11-21T12:04:19.308Z"
+  },
+  "/images/banner_tshirts.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262661/maaza-printwala/images/banner_tshirts.jpg",
+    "publicId": "maaza-printwala/images/banner_tshirts",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 907476,
+    "uploadedAt": "2026-11-21T12:04:21.967Z"
+  },
+  "/images/business_cards.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262661/maaza-printwala/images/business_cards.jpg",
+    "publicId": "maaza-printwala/images/business_cards",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 736260,
+    "uploadedAt": "2026-11-21T12:04:21.994Z"
+  },
+  "/images/banner_business_cards.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262662/maaza-printwala/images/banner_business_cards.jpg",
+    "publicId": "maaza-printwala/images/banner_business_cards",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 749021,
+    "uploadedAt": "2026-11-21T12:04:22.278Z"
+  },
+  "/images/cat_caps_new_1785478209032.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262663/maaza-printwala/images/cat_caps_new_1785478209032.jpg",
+    "publicId": "maaza-printwala/images/cat_caps_new_1785478209032",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 532467,
+    "uploadedAt": "2026-11-21T12:04:23.836Z"
+  },
+  "/images/cat_apparel_1785433714885.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262664/maaza-printwala/images/cat_apparel_1785433714885.jpg",
+    "publicId": "maaza-printwala/images/cat_apparel_1785433714885",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 632559,
+    "uploadedAt": "2026-11-21T12:04:24.190Z"
+  },
+  "/images/cat_flyers_brochures_1785433655247.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262666/maaza-printwala/images/cat_flyers_brochures_1785433655247.jpg",
+    "publicId": "maaza-printwala/images/cat_flyers_brochures_1785433655247",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 868418,
+    "uploadedAt": "2026-11-21T12:04:26.708Z"
+  },
+  "/images/cat_corporate_gifts_1785433724640.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262666/maaza-printwala/images/cat_corporate_gifts_1785433724640.jpg",
+    "publicId": "maaza-printwala/images/cat_corporate_gifts_1785433724640",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 727708,
+    "uploadedAt": "2026-11-21T12:04:27.047Z"
+  },
+  "/images/cat_formal_new_1785478190948.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262668/maaza-printwala/images/cat_formal_new_1785478190948.jpg",
+    "publicId": "maaza-printwala/images/cat_formal_new_1785478190948",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 562104,
+    "uploadedAt": "2026-11-21T12:04:28.424Z"
+  },
+  "/images/cat_industry_1785433735322.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262669/maaza-printwala/images/cat_industry_1785433735322.jpg",
+    "publicId": "maaza-printwala/images/cat_industry_1785433735322",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 885038,
+    "uploadedAt": "2026-11-21T12:04:30.636Z"
+  },
+  "/images/cat_mugs_1785433705029.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262671/maaza-printwala/images/cat_mugs_1785433705029.jpg",
+    "publicId": "maaza-printwala/images/cat_mugs_1785433705029",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 834149,
+    "uploadedAt": "2026-11-21T12:04:31.100Z"
+  },
+  "/images/cat_clothing_new_1785478162007.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262671/maaza-printwala/images/cat_clothing_new_1785478162007.jpg",
+    "publicId": "maaza-printwala/images/cat_clothing_new_1785478162007",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 809677,
+    "uploadedAt": "2026-11-21T12:04:32.002Z"
+  },
+  "/images/cat_notebooks_new_1785478132458.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262673/maaza-printwala/images/cat_notebooks_new_1785478132458.jpg",
+    "publicId": "maaza-printwala/images/cat_notebooks_new_1785478132458",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 685078,
+    "uploadedAt": "2026-11-21T12:04:33.443Z"
+  },
+  "/images/cat_mugs_new_1785478141544.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262674/maaza-printwala/images/cat_mugs_new_1785478141544.jpg",
+    "publicId": "maaza-printwala/images/cat_mugs_new_1785478141544",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 658067,
+    "uploadedAt": "2026-11-21T12:04:34.440Z"
+  },
+  "/images/cat_occasions_1785433745476.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262674/maaza-printwala/images/cat_occasions_1785433745476.jpg",
+    "publicId": "maaza-printwala/images/cat_occasions_1785433745476",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 908949,
+    "uploadedAt": "2026-11-21T12:04:34.620Z"
+  },
+  "/images/cat_packaging_1785433687115.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262675/maaza-printwala/images/cat_packaging_1785433687115.jpg",
+    "publicId": "maaza-printwala/images/cat_packaging_1785433687115",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 528753,
+    "uploadedAt": "2026-11-21T12:04:35.396Z"
+  },
+  "/images/cat_stationery_1785433665002.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262676/maaza-printwala/images/cat_stationery_1785433665002.jpg",
+    "publicId": "maaza-printwala/images/cat_stationery_1785433665002",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 808454,
+    "uploadedAt": "2026-11-21T12:04:36.221Z"
+  },
+  "/images/cat_polo_new_1785478171451.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262676/maaza-printwala/images/cat_polo_new_1785478171451.jpg",
+    "publicId": "maaza-printwala/images/cat_polo_new_1785478171451",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 597586,
+    "uploadedAt": "2026-11-21T12:04:36.965Z"
+  },
+  "/images/cat_tshirt_new_1785478181285.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262677/maaza-printwala/images/cat_tshirt_new_1785478181285.jpg",
+    "publicId": "maaza-printwala/images/cat_tshirt_new_1785478181285",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 649082,
+    "uploadedAt": "2026-11-21T12:04:37.442Z"
+  },
+  "/images/cat_stickers_labels_1785433676109.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262677/maaza-printwala/images/cat_stickers_labels_1785433676109.jpg",
+    "publicId": "maaza-printwala/images/cat_stickers_labels_1785433676109",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 786166,
+    "uploadedAt": "2026-11-21T12:04:38.107Z"
+  },
+  "/images/cat_visiting_cards_1785433645262.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262678/maaza-printwala/images/cat_visiting_cards_1785433645262.jpg",
+    "publicId": "maaza-printwala/images/cat_visiting_cards_1785433645262",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 632434,
+    "uploadedAt": "2026-11-21T12:04:39.044Z"
+  },
+  "/images/cat_visiting_cards_new_1785478123231.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262678/maaza-printwala/images/cat_visiting_cards_new_1785478123231.jpg",
+    "publicId": "maaza-printwala/images/cat_visiting_cards_new_1785478123231",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 631610,
+    "uploadedAt": "2026-11-21T12:04:40.004Z"
+  },
+  "/images/coffee_mug.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262680/maaza-printwala/images/coffee_mug.jpg",
+    "publicId": "maaza-printwala/images/coffee_mug",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 781066,
+    "uploadedAt": "2026-11-21T12:04:41.012Z"
+  },
+  "/images/corporate_welcome_kit.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262680/maaza-printwala/images/corporate_welcome_kit.jpg",
+    "publicId": "maaza-printwala/images/corporate_welcome_kit",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 754156,
+    "uploadedAt": "2026-11-21T12:04:41.019Z"
+  },
+  "/images/corp_gifting_banner.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262681/maaza-printwala/images/corp_gifting_banner.jpg",
+    "publicId": "maaza-printwala/images/corp_gifting_banner",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 620286,
+    "uploadedAt": "2026-11-21T12:04:41.118Z"
+  },
+  "/images/cotton_tshirt.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262682/maaza-printwala/images/cotton_tshirt.jpg",
+    "publicId": "maaza-printwala/images/cotton_tshirt",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 635868,
+    "uploadedAt": "2026-11-21T12:04:42.446Z"
+  },
+  "/images/corrugated_boxes.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262683/maaza-printwala/images/corrugated_boxes.jpg",
+    "publicId": "maaza-printwala/images/corrugated_boxes",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 669598,
+    "uploadedAt": "2026-11-21T12:04:43.984Z"
+  },
+  "/images/explore_business_cards_1785478383406.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262684/maaza-printwala/images/explore_business_cards_1785478383406.jpg",
+    "publicId": "maaza-printwala/images/explore_business_cards_1785478383406",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 653539,
+    "uploadedAt": "2026-11-21T12:04:44.342Z"
+  },
+  "/images/executive_letterhead.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262685/maaza-printwala/images/executive_letterhead.jpg",
+    "publicId": "maaza-printwala/images/executive_letterhead",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 774673,
+    "uploadedAt": "2026-11-21T12:04:45.527Z"
+  },
+  "/images/explore_tshirts_1785478392413.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262687/maaza-printwala/images/explore_tshirts_1785478392413.jpg",
+    "publicId": "maaza-printwala/images/explore_tshirts_1785478392413",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 535283,
+    "uploadedAt": "2026-11-21T12:04:47.098Z"
+  },
+  "/images/hero_banner_main.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262687/maaza-printwala/images/hero_banner_main.jpg",
+    "publicId": "maaza-printwala/images/hero_banner_main",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 966747,
+    "uploadedAt": "2026-11-21T12:04:47.559Z"
+  },
+  "/images/outdoor_banner.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262688/maaza-printwala/images/outdoor_banner.jpg",
+    "publicId": "maaza-printwala/images/outdoor_banner",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 924581,
+    "uploadedAt": "2026-11-21T12:04:48.587Z"
+  },
+  "/images/products/cards_boxed_packaging.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262690/maaza-printwala/images/products/cards_boxed_packaging.jpg",
+    "publicId": "maaza-printwala/images/products/cards_boxed_packaging",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 726622,
+    "uploadedAt": "2026-11-21T12:04:50.569Z"
+  },
+  "/images/products/cards_angle_view.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262690/maaza-printwala/images/products/cards_angle_view.jpg",
+    "publicId": "maaza-printwala/images/products/cards_angle_view",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 750144,
+    "uploadedAt": "2026-11-21T12:04:50.987Z"
+  },
+  "/images/polo_shirt.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262691/maaza-printwala/images/polo_shirt.jpg",
+    "publicId": "maaza-printwala/images/polo_shirt",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 702469,
+    "uploadedAt": "2026-11-21T12:04:51.585Z"
+  },
+  "/images/products/cards_gallery_sample.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262692/maaza-printwala/images/products/cards_gallery_sample.jpg",
+    "publicId": "maaza-printwala/images/products/cards_gallery_sample",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 704583,
+    "uploadedAt": "2026-11-21T12:04:52.225Z"
+  },
+  "/images/products/diamond_visiting_card.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262693/maaza-printwala/images/products/diamond_visiting_card.jpg",
+    "publicId": "maaza-printwala/images/products/diamond_visiting_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 668738,
+    "uploadedAt": "2026-11-21T12:04:53.459Z"
+  },
+  "/images/products/v2_premium_card_1785948535781.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262693/maaza-printwala/images/products/diamond_visiting_card.jpg",
+    "publicId": "maaza-printwala/images/products/diamond_visiting_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 668738,
+    "uploadedAt": "2026-11-21T12:04:53.459Z"
+  },
+  "/images/products/flex_banner_outdoor.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262694/maaza-printwala/images/products/flex_banner_outdoor.jpg",
+    "publicId": "maaza-printwala/images/products/flex_banner_outdoor",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 839765,
+    "uploadedAt": "2026-11-21T12:04:54.642Z"
+  },
+  "/images/products/cards_lifestyle_desk.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262694/maaza-printwala/images/products/cards_lifestyle_desk.jpg",
+    "publicId": "maaza-printwala/images/products/cards_lifestyle_desk",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 708788,
+    "uploadedAt": "2026-11-21T12:04:54.767Z"
+  },
+  "/images/products/cards_texture_closeup.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262694/maaza-printwala/images/products/cards_texture_closeup.jpg",
+    "publicId": "maaza-printwala/images/products/cards_texture_closeup",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 780970,
+    "uploadedAt": "2026-11-21T12:04:55.034Z"
+  },
+  "/images/products/hero_kraft_card.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262695/maaza-printwala/images/products/hero_kraft_card.jpg",
+    "publicId": "maaza-printwala/images/products/hero_kraft_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 688886,
+    "uploadedAt": "2026-11-21T12:04:56.138Z"
+  },
+  "/images/products/hero_qr_code_card.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262696/maaza-printwala/images/products/hero_qr_code_card.jpg",
+    "publicId": "maaza-printwala/images/products/hero_qr_code_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 486034,
+    "uploadedAt": "2026-11-21T12:04:56.513Z"
+  },
+  "/images/products/kraft_visiting_card.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262697/maaza-printwala/images/products/kraft_visiting_card.jpg",
+    "publicId": "maaza-printwala/images/products/kraft_visiting_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 766555,
+    "uploadedAt": "2026-11-21T12:04:57.316Z"
+  },
+  "/images/products/v2_qrcode_card_1785948524859.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262697/maaza-printwala/images/products/kraft_visiting_card.jpg",
+    "publicId": "maaza-printwala/images/products/kraft_visiting_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 766555,
+    "uploadedAt": "2026-11-21T12:04:57.316Z"
+  },
+  "/images/products/letterhead_angle_pack.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262697/maaza-printwala/images/products/letterhead_angle_pack.jpg",
+    "publicId": "maaza-printwala/images/products/letterhead_angle_pack",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 705718,
+    "uploadedAt": "2026-11-21T12:04:58.217Z"
+  },
+  "/images/products/hero_pearl_card.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262697/maaza-printwala/images/products/hero_pearl_card.jpg",
+    "publicId": "maaza-printwala/images/products/hero_pearl_card",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 652296,
+    "uploadedAt": "2026-11-21T12:04:58.628Z"
+  },
+  "/images/products/magnetic_visiting_card_1785947801266.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262699/maaza-printwala/images/products/magnetic_visiting_card_1785947801266.jpg",
+    "publicId": "maaza-printwala/images/products/magnetic_visiting_card_1785947801266",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 452599,
+    "uploadedAt": "2026-11-21T12:04:59.242Z"
+  },
+  "/images/products/pvc_id_lifestyle.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262699/maaza-printwala/images/products/pvc_id_lifestyle.jpg",
+    "publicId": "maaza-printwala/images/products/pvc_id_lifestyle",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 762419,
+    "uploadedAt": "2026-11-21T12:04:59.945Z"
+  },
+  "/images/products/standard_visiting_card_1785947757902.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262700/maaza-printwala/images/products/standard_visiting_card_1785947757902.jpg",
+    "publicId": "maaza-printwala/images/products/standard_visiting_card_1785947757902",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 480992,
+    "uploadedAt": "2026-11-21T12:05:00.982Z"
+  },
+  "/images/products/rounded_visiting_card_1785947777870.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262701/maaza-printwala/images/products/rounded_visiting_card_1785947777870.jpg",
+    "publicId": "maaza-printwala/images/products/rounded_visiting_card_1785947777870",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 456454,
+    "uploadedAt": "2026-11-21T12:05:01.289Z"
+  },
+  "/images/products/standee_lifestyle_event.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262702/maaza-printwala/images/products/standee_lifestyle_event.jpg",
+    "publicId": "maaza-printwala/images/products/standee_lifestyle_event",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 903431,
+    "uploadedAt": "2026-11-21T12:05:02.573Z"
+  },
+  "/images/products/tshirt_lifestyle.jpg": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262703/maaza-printwala/images/products/tshirt_lifestyle.jpg",
+    "publicId": "maaza-printwala/images/products/tshirt_lifestyle",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 784250,
+    "uploadedAt": "2026-11-21T12:05:03.976Z"
+  },
+  "/images/products/transparent_visiting_card_1785947767352.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262704/maaza-printwala/images/products/transparent_visiting_card_1785947767352.jpg",
+    "publicId": "maaza-printwala/images/products/transparent_visiting_card_1785947767352",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 456661,
+    "uploadedAt": "2026-11-21T12:05:04.088Z"
+  },
+  "/images/products/square_visiting_card_1785947789963.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262704/maaza-printwala/images/products/square_visiting_card_1785947789963.jpg",
+    "publicId": "maaza-printwala/images/products/square_visiting_card_1785947789963",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 508637,
+    "uploadedAt": "2026-11-21T12:05:05.096Z"
+  },
+  "/images/products/v2_glossy_card_1785948351752.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262706/maaza-printwala/images/products/v2_glossy_card_1785948351752.jpg",
+    "publicId": "maaza-printwala/images/products/v2_glossy_card_1785948351752",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 639160,
+    "uploadedAt": "2026-11-21T12:05:06.370Z"
+  },
+  "/images/products/v2_matte_card_1785948364553.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262707/maaza-printwala/images/products/v2_matte_card_1785948364553.jpg",
+    "publicId": "maaza-printwala/images/products/v2_matte_card_1785948364553",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 630075,
+    "uploadedAt": "2026-11-21T12:05:07.844Z"
+  },
+  "/images/products/v2_spot_uv_card_1785948375368.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262708/maaza-printwala/images/products/v2_spot_uv_card_1785948375368.jpg",
+    "publicId": "maaza-printwala/images/products/v2_spot_uv_card_1785948375368",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 687535,
+    "uploadedAt": "2026-11-21T12:05:08.294Z"
+  },
+  "/images/products/v2_velvet_card_1785948471723.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262710/maaza-printwala/images/products/v2_velvet_card_1785948471723.jpg",
+    "publicId": "maaza-printwala/images/products/v2_velvet_card_1785948471723",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 809723,
+    "uploadedAt": "2026-11-21T12:05:10.414Z"
+  },
+  "/images/products/v2_standard_card_1785948339354.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262710/maaza-printwala/images/products/v2_standard_card_1785948339354.jpg",
+    "publicId": "maaza-printwala/images/products/v2_standard_card_1785948339354",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 535056,
+    "uploadedAt": "2026-11-21T12:05:10.579Z"
+  },
+  "/images/products/v2_rounded_card_1785948386413.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262712/maaza-printwala/images/products/v2_rounded_card_1785948386413.jpg",
+    "publicId": "maaza-printwala/images/products/v2_rounded_card_1785948386413",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 979257,
+    "uploadedAt": "2026-11-21T12:05:12.026Z"
+  },
+  "/images/subcategories/brochures.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262712/maaza-printwala/images/subcategories/brochures.jpg",
+    "publicId": "maaza-printwala/images/subcategories/brochures",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 737502,
+    "uploadedAt": "2026-11-21T12:05:12.613Z"
+  },
+  "/images/subcategories/caps.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262714/maaza-printwala/images/subcategories/caps.jpg",
+    "publicId": "maaza-printwala/images/subcategories/caps",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 754569,
+    "uploadedAt": "2026-11-21T12:05:14.694Z"
+  },
+  "/images/subcategories/catalogues.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262714/maaza-printwala/images/subcategories/catalogues.jpg",
+    "publicId": "maaza-printwala/images/subcategories/catalogues",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 842964,
+    "uploadedAt": "2026-11-21T12:05:15.256Z"
+  },
+  "/images/subcategories/die_cut_stickers.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262717/maaza-printwala/images/subcategories/die_cut_stickers.jpg",
+    "publicId": "maaza-printwala/images/subcategories/die_cut_stickers",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 944372,
+    "uploadedAt": "2026-11-21T12:05:17.073Z"
+  },
+  "/images/subcategories/flyers.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262717/maaza-printwala/images/subcategories/flyers.jpg",
+    "publicId": "maaza-printwala/images/subcategories/flyers",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 835939,
+    "uploadedAt": "2026-11-21T12:05:17.563Z"
+  },
+  "/images/subcategories/hoodies.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262719/maaza-printwala/images/subcategories/hoodies.jpg",
+    "publicId": "maaza-printwala/images/subcategories/hoodies",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 790762,
+    "uploadedAt": "2026-11-21T12:05:20.652Z"
+  },
+  "/images/subcategories/gift_boxes.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262724/maaza-printwala/images/subcategories/gift_boxes.jpg",
+    "publicId": "maaza-printwala/images/subcategories/gift_boxes",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 805355,
+    "uploadedAt": "2026-11-21T12:05:24.307Z"
+  },
+  "/images/subcategories/labels.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262724/maaza-printwala/images/subcategories/labels.jpg",
+    "publicId": "maaza-printwala/images/subcategories/labels",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 789957,
+    "uploadedAt": "2026-11-21T12:05:24.943Z"
+  },
+  "/images/subcategories/envelopes.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262726/maaza-printwala/images/subcategories/envelopes.jpg",
+    "publicId": "maaza-printwala/images/subcategories/envelopes",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 667822,
+    "uploadedAt": "2026-11-21T12:05:27.054Z"
+  },
+  "/images/subcategories/letterheads.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262727/maaza-printwala/images/subcategories/letterheads.jpg",
+    "publicId": "maaza-printwala/images/subcategories/letterheads",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 732320,
+    "uploadedAt": "2026-11-21T12:05:27.064Z"
+  },
+  "/images/subcategories/notepads.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262728/maaza-printwala/images/subcategories/notepads.jpg",
+    "publicId": "maaza-printwala/images/subcategories/notepads",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 693261,
+    "uploadedAt": "2026-11-21T12:05:28.838Z"
+  },
+  "/images/subcategories/pen_drives.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262728/maaza-printwala/images/subcategories/pen_drives.jpg",
+    "publicId": "maaza-printwala/images/subcategories/pen_drives",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 750178,
+    "uploadedAt": "2026-11-21T12:05:29.026Z"
+  },
+  "/images/subcategories/premium_cards.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262730/maaza-printwala/images/subcategories/premium_cards.jpg",
+    "publicId": "maaza-printwala/images/subcategories/premium_cards",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 781734,
+    "uploadedAt": "2026-11-21T12:05:30.370Z"
+  },
+  "/images/subcategories/paper_bags.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262730/maaza-printwala/images/subcategories/paper_bags.jpg",
+    "publicId": "maaza-printwala/images/subcategories/paper_bags",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 646218,
+    "uploadedAt": "2026-11-21T12:05:30.679Z"
+  },
+  "/images/subcategories/posters.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262731/maaza-printwala/images/subcategories/posters.jpg",
+    "publicId": "maaza-printwala/images/subcategories/posters",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 759627,
+    "uploadedAt": "2026-11-21T12:05:31.376Z"
+  },
+  "/images/subcategories/product_labels.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262731/maaza-printwala/images/subcategories/product_labels.jpg",
+    "publicId": "maaza-printwala/images/subcategories/product_labels",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 785687,
+    "uploadedAt": "2026-11-21T12:05:31.656Z"
+  },
+  "/images/subcategories/stickers.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262732/maaza-printwala/images/subcategories/stickers.jpg",
+    "publicId": "maaza-printwala/images/subcategories/stickers",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 977373,
+    "uploadedAt": "2026-11-21T12:05:32.929Z"
+  },
+  "/images/subcategories/shipping_boxes.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262732/maaza-printwala/images/subcategories/shipping_boxes.jpg",
+    "publicId": "maaza-printwala/images/subcategories/shipping_boxes",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 585653,
+    "uploadedAt": "2026-11-21T12:05:33.127Z"
+  },
+  "/images/subcategories/water_bottles.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262734/maaza-printwala/images/subcategories/water_bottles.jpg",
+    "publicId": "maaza-printwala/images/subcategories/water_bottles",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 770489,
+    "uploadedAt": "2026-11-21T12:05:34.210Z"
+  },
+  "/images/visiting_cards_banner.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262734/maaza-printwala/images/visiting_cards_banner.jpg",
+    "publicId": "maaza-printwala/images/visiting_cards_banner",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 583282,
+    "uploadedAt": "2026-11-21T12:05:34.773Z"
+  },
+  "/images/subcategories/pvc_cards.png": {
+    "url": "https://res.cloudinary.com/kz2pddnr/image/upload/v1795262736/maaza-printwala/images/subcategories/pvc_cards.jpg",
+    "publicId": "maaza-printwala/images/subcategories/pvc_cards",
+    "format": "jpg",
+    "width": 1024,
+    "height": 1024,
+    "bytes": 711485,
+    "uploadedAt": "2026-11-21T12:05:36.411Z"
+  }
+}
