@@ -9,4 +9,7 @@ const router = express.Router();
 router.get('/homepage', cmsController.getHomepageContent);
 router.put('/homepage', authenticate, authorize(ROLES.ADMIN), cmsController.updateHomepageContent);
 
+// Public single-key read - the storefront footer and banners use this
+router.get('/key/:key', cmsController.getContentByKey);
+
 export default router;

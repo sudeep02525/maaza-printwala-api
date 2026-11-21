@@ -44,3 +44,16 @@ export const updateHomepageContent = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getContentByKey = async (req, res, next) => {
+  try {
+    const { key } = req.params;
+    const content = await CMSContent.findOne({ key, isActive: true });
+    if (!content) {
+      return sendSuccess(res, STATUS_CODES.OK, 'No content stored for this key', { content: null });
+    }
+    return sendSuccess(res, STATUS_CODES.OK, 'CMS content fetched successfully', { content });
+  } catch (error) {
+    next(error);
+  }
+};

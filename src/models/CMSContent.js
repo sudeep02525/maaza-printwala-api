@@ -11,7 +11,7 @@ const cmsContentSchema = new mongoose.Schema(
     section: {
       type: String,
       required: true,
-      enum: ['HERO', 'BANNERS', 'FAQ', 'POLICY', 'ABOUT', 'CONTACT_INFO'],
+      enum: ['HERO', 'BANNERS', 'FOOTER', 'FAQ', 'POLICY', 'ABOUT', 'CONTACT_INFO'],
     },
     title: {
       type: String,
