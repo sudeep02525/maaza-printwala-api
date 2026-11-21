@@ -4,7 +4,8 @@ import { STATUS_CODES } from '../constants/error.constants.js';
 
 export const getHomepageContent = async (req, res, next) => {
   try {
-    const content = await CMSContent.find({ isActive: true });
+    const filter = req.query.all === 'true' ? {} : { isActive: true };
+    const content = await CMSContent.find(filter);
     
     // Return standard sections array and content map for dynamic homepage rendering
     const sections = [
