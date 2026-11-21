@@ -6,7 +6,7 @@ dotenv.config();
 class EmailService {
   constructor() {
     this.isConfigured = !!(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS);
-    this.fromAddress = process.env.SMTP_FROM || '"Maaza Printwala" <support@mazaprintwala.com>';
+    this.fromAddress = process.env.SMTP_FROM || '"Maaza Printwala" <imagemazaprintwala@gmail.com>';
 
     if (this.isConfigured) {
       this.transporter = nodemailer.createTransport({
