@@ -2,6 +2,12 @@ import 'dotenv/config';
 import mongoose from 'mongoose';
 import bcrypt from 'bcrypt';
 
+if (process.env.NODE_ENV === 'production' || process.env.ALLOW_SEED !== 'true') {
+  console.error('CRITICAL: Seed script disabled to protect the Cloudinary catalogue and production DB.');
+  console.error('If you explicitly wish to run this in development, execute with: ALLOW_SEED=true');
+  process.exit(1);
+}
+
 import { ROLES } from '../constants/roles.constants.js';
 import User from '../models/User.js';
 import Category from '../models/Category.js';

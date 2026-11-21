@@ -9,6 +9,11 @@ import cloudinary from '../config/cloudinary.js';
  */
 class StorageService {
   constructor() {
+    if (process.env.NODE_ENV === 'production' && !process.env.STORAGE_PROVIDER) {
+      throw new Error(
+        'FATAL: STORAGE_PROVIDER must be explicitly configured in production (e.g. STORAGE_PROVIDER=cloudinary). Silent fallback to local disk is disallowed.'
+      );
+    }
     this.provider = process.env.STORAGE_PROVIDER || 'local'; // 'local', 'cloudinary'
     this.localArtworkDir = path.resolve('public/uploads/artwork');
     this.localProductDir = path.resolve('public/images/products');
